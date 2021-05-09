@@ -2,3 +2,6 @@
 /pyvenv.cfg
 /Scripts
 /frontend/node_modules
+/.vscode
+/backend/__pycache__
+/backend/db.sqlite3
