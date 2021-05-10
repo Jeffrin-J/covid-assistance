@@ -6,7 +6,9 @@ from rest_framework.response import Response
 
 @api_view(['POST'])
 def getData():
-    driver = webdriver.Chrome(executable_path="./chromedriver.exe")
+    option = webdriver.ChromeOptions()
+    option.add_argument('headless')
+    driver = webdriver.Chrome(executable_path="./chromedriver.exe", options=option)
     driver.get("https://stopcorona.tn.gov.in/beds.php")
     data=[]
     row=[]
