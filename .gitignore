@@ -4,4 +4,6 @@
 /frontend/node_modules
 /.vscode
 /backend/backend/__pycache__
+/backend/app/__pycache__
+/backend/app/migrations/__pycache__
 /backend/db.sqlite3
