@@ -8,20 +8,6 @@ import axios from 'axios';
 
 
 
-const getmarkers=()=>{
-return(
-datas.map(data=>{  
-return(      
-<Marker
-lat={data.lat}
-lng={data.lng}
-name="My Marker"
-color="blue"
-/>);
-})
-);
-}
-
 const Map = (props) => {
     const{lat,lng}=props;
 
@@ -29,14 +15,32 @@ const Map = (props) => {
     const [zoom, setZoom] = useState(11);
     const [markerdata,setMarkerData]=useState();
 
-    const getMapOptions = (maps) => {
-      return {
-        disableDefaultUI: true,
-        mapTypeControl: true,
-        streetViewControl: true,
-        styles: [{ featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'on' }] }],
-      };
-    };
+    // const getmarkers=()=>{
+    //   return(
+    //   markerdata.map(data=>{  
+    //   return(      
+    //   <Marker
+    //   lat={data.lat}
+    //   lng={data.lng}
+    //   name="My Marker"
+    //   color="blue"
+    //   />);
+    //   })
+    //   );
+    //   }
+
+    useEffect(()=>{
+      axios
+      .post("http://localhost:8000/api/postcurrentloc",center)
+      .then((res) => {
+        if (res.data) {
+          const data=res.data;
+          setMarkerData(data);
+          console.log(markerdata);
+        }
+      });
+    });
+
 
   
   return (
@@ -45,7 +49,6 @@ const Map = (props) => {
           bootstrapURLKeys={{ key: 'AIzaSyBSmRWeVaaWOuihcmrBFkmcvMgBDDg_Wag' }}
           defaultCenter={center}
           defaultZoom={zoom}
-          options={getMapOptions}
         >
 
         <UMarker lat={center.lat}
@@ -53,7 +56,7 @@ const Map = (props) => {
         name="My Marker"
         color="red"/>
         
-        {getmarkers()} 
+        {/* {getmarkers()}  */}
         
         </GoogleMapReact>
       </div>

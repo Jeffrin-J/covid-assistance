@@ -7,3 +7,8 @@ class DataSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hospitals
         fields = '__all__'
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hospitals
+        fields = ('latitude', 'longitude')

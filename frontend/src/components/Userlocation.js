@@ -21,7 +21,7 @@ MapContainer.propTypes = { ...MapContainer.propTypes, ...geoPropTypes };
 
 export default geolocated({
     positionOptions: {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
     },
     userDecisionTimeout: 5000,
 })(MapContainer);

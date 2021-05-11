@@ -6,6 +6,8 @@ from rest_framework.response import Response
 import pandas as pd
 from .serializers import *
 from geopy.geocoders import Nominatim
+from rest_framework.generics import ListCreateAPIView
+from math import dist, radians, cos, sin, asin, sqrt
 
 class getdata(APIView):
     def get(self, request):
@@ -16,7 +18,7 @@ class getdata(APIView):
         df = df.fillna(0)
         for i,j in df.iterrows():
             data=list(j)
-            address=data[2] + "," + data[1]
+            address=data[2]
             try:
                 geolocator = Nominatim(user_agent="forpythonmail@gmail.com")
                 x = geolocator.geocode(address)
@@ -24,10 +26,11 @@ class getdata(APIView):
                 lon = x.longitude
 
             except:
-                geolocator = Nominatim(user_agent="forpythonmail@gmail.com")
+                pass
+                """ geolocator = Nominatim(user_agent="forpythonmail@gmail.com")
                 x = geolocator.geocode(data[1])
                 lat = x.latitude
-                lon = x.longitude
+                lon = x.longitude """
 
             user = User(username = data[2])
             user.set_password("admin")
@@ -45,10 +48,39 @@ class getdata(APIView):
         return Response({"hello"})
 
 
-class Postcurrentloc(APIView):
-    def Post(self, request):
-        
-        return Response({})
+class Postcurrentloc(ListCreateAPIView):
+    serializer_class = LocationSerializer
+    queryset = Hospitals.objects.all()
+
+    def dist(self, lat1, long1, lat2, long2):
+        lat1, long1, lat2, long2 = map(radians, [lat1, long1, lat2, long2])
+        # haversine formula 
+        dlon = long2 - long1 
+        dlat = lat2 - lat1 
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * asin(sqrt(a)) 
+        # Radius of earth in kilometers is 6371
+        km = 6371* c
+        return km
+
+    def post(self, request):
+        print(request.data)
+        h_lat = float(request.data.get('latitude'))
+        h_lon = float(request.data.get('longitude'))
+        print(h_lat,h_lon)
+        rad = 20
+        result = []
+        c=0
+        for i in self.get_queryset():
+            #print(type(i.latitude))
+            if self.dist(h_lat, h_lon, i.latitude, i.longitude)<=rad:
+                result.append({"lat":i.latitude, "lng":i.longitude})
+                print(i)
+            c+=0
+            if c==100:
+                break
+        return Response(result)
+
 
 
 
