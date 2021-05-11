@@ -26,7 +26,8 @@ from app.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/check', getdata.as_view())
+    path('api/check', getdata.as_view()),
+    path('api/postcurrentloc',Postcurrentloc.as_view()),
 ]
 
 

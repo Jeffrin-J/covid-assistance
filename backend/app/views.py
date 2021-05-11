@@ -12,6 +12,7 @@ class getdata(APIView):
         url="https://stopcorona.tn.gov.in/beds.php"
         df = pd.read_html(url, attrs={"id": "dtBasicExample"})
         df = df[0]
+        df =df.head(25)
         df = df.fillna(0)
         for i,j in df.iterrows():
             data=list(j)
@@ -42,6 +43,12 @@ class getdata(APIView):
             
             
         return Response({"hello"})
+
+
+class Postcurrentloc(APIView):
+    def Post(self, request):
+        
+        return Response({})
 
 
 
