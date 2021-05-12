@@ -1,6 +1,8 @@
 import React from "react";
 import { geolocated,geoPropTypes } from "react-geolocated";
-import Map from './Map'
+import Maps from './Maps'
+
+
 
 
 class MapContainer extends React.Component {
@@ -10,7 +12,7 @@ class MapContainer extends React.Component {
         ) : !this.props.isGeolocationEnabled ? (
             <div>Geolocation is not enabled</div>
         ) : this.props.coords ? (
-            <Map lat={this.props.coords.latitude} lng={this.props.coords.longitude}/>
+            <Maps lat={this.props.coords.latitude} lng={this.props.coords.longitude}/>
         ) : (
             <div>Getting the location data&hellip; </div>
         );

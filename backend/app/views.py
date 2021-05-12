@@ -8,6 +8,9 @@ from .serializers import *
 from geopy.geocoders import Nominatim
 from rest_framework.generics import ListCreateAPIView
 from math import dist, radians, cos, sin, asin, sqrt
+from selenium import webdriver
+from time import sleep
+from webdriver_manager.chrome import ChromeDriverManager
 
 class getdata(APIView):
     def get(self, request):
@@ -16,21 +19,25 @@ class getdata(APIView):
         df = df[0]
         df =df.head(25)
         df = df.fillna(0)
+        driver1 = ChromeDriverManager().install()
+
         for i,j in df.iterrows():
             data=list(j)
-            address=data[2]
-            try:
-                geolocator = Nominatim(user_agent="forpythonmail@gmail.com")
-                x = geolocator.geocode(address)
-                lat = x.latitude
-                lon = x.longitude
-
-            except:
-                pass
-                """ geolocator = Nominatim(user_agent="forpythonmail@gmail.com")
-                x = geolocator.geocode(data[1])
-                lat = x.latitude
-                lon = x.longitude """
+            address=data[2]+","+data[1]
+            options = webdriver.ChromeOptions()
+            options.add_argument('headless')
+            driver = webdriver.Chrome(driver1, options=options)
+            driver.get("https://www.google.com/maps")
+            sleep(2)
+            inp = driver.find_element_by_id("searchboxinput")
+            inp.click()
+            inp.send_keys(address)
+            driver.find_element_by_id("searchbox-searchbutton").click()
+            sleep(2)
+            url = driver.current_url
+            driver.close()
+            print(url)
+            url = url[url.index('@')+1:].split(",")[:2]
 
             user = User(username = data[2])
             user.set_password("admin")
@@ -40,7 +47,7 @@ class getdata(APIView):
             data.pop(1)
             data.pop(-1)
             data.insert(0,user)
-            data.extend([0,0,0,0,0,lat,lon])
+            data.extend([0,0,0,0,0,float(url[0]),float(url[1])])
             print(data)
             Hospitals(user= user, district=data[1], covid_bed_total=data[2], covid_bed_occupied=data[3], covid_bed_vacant=data[4], oxy_bed_total=data[5], oxy_bed_occupied=data[6], oxy_bed_vacant=data[7], non_oxy_bed_total=data[8], non_oxy_bed_occupied=data[9], non_oxy_bed_vacant=data[10], icu_bed_total=data[11], icu_bed_occupied=data[12], icu_bed_vacant=data[13], vent_bed_total=data[14], vent_bed_occupied=data[15], vent_bed_vacant=data[16], last_updated=data[17], contactnumber=data[18], no_applied_covid=data[19], no_applied_oxy=data[20], no_applied_nonOxy=data[21], no_applied_icu=data[22], no_applied_vent=data[23], latitude=data[24], longitude=data[25]).save()
             
@@ -65,10 +72,10 @@ class Postcurrentloc(ListCreateAPIView):
 
     def post(self, request):
         print(request.data)
-        h_lat = float(request.data.get('latitude'))
-        h_lon = float(request.data.get('longitude'))
+        h_lat = float(request.data.get('lat'))
+        h_lon = float(request.data.get('lng'))
         print(h_lat,h_lon)
-        rad = 20
+        rad = 1000
         result = []
         c=0
         for i in self.get_queryset():
