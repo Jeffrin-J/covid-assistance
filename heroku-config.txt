@@ -1,4 +1,0 @@
-heroku create
-heroku config:set ALLOWED_HOSTS=mighty-headland-88359.herokuapp.com
-heroku config:set DJANGO_SETTINGS_MODULE=main_scripts.settings.heroku
-heroku config:set SECRET_KEY=
