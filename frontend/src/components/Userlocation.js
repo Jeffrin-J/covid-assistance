@@ -1,4 +1,4 @@
-import React from "react";
+StyledTableCellimport React from "react";
 import { geolocated,geoPropTypes } from "react-geolocated";
 import Maps from './Maps'
 
