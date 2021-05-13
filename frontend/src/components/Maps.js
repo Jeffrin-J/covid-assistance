@@ -9,14 +9,15 @@ import osm from "./osm-providers";
 import "leaflet/dist/leaflet.css";
 import {Marker, Popup} from "react-leaflet"
 import L from "leaflet"
-import {AppBar, Grid,Toolbar} from '@material-ui/core'
-import { fade, makeStyles } from "@material-ui/core/styles";
+import Grid from '@material-ui/core/Grid';
+import {fade, makeStyles } from "@material-ui/core/styles";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import './marker.css';
 
 const useStyles = makeStyles((theme) => ({
   MapContainer: {
@@ -39,8 +40,8 @@ const markerIcon = new L.Icon({
 
 
 const markerIcon2 = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/stedman/GeoLocateMe/master/bluedot.png",
-  iconSize: [15, 15],
+  iconUrl: "https://sheengroup.com.au/assets/Uploads/misc/current-location.png",
+  iconSize: [40,40],
   iconAnchor: [17, 46], //[left/right, top/bottom]
   popupAnchor: [0, -46], //[left/right, top/bottom]
 });
@@ -83,31 +84,7 @@ const gettables=()=>{
 
   return(
     
-      <TableContainer>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>HospitalName</TableCell>
-            <TableCell align="right">Covid Beds Total</TableCell>
-            <TableCell align="right">Covid Beds Occpied</TableCell>
-            <TableCell align="right">Covid Beds Vacant</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {markerdata.map((row) => (
-            <TableRow key={row.place}>
-              <TableCell component="th" scope="row">
-                {row.place}
-              </TableCell>
-              <TableCell align="right">{row.covid_bed_total}</TableCell>
-              <TableCell align="right">{row.covid_bed_occupied}</TableCell>
-              <TableCell align="right">{row.covid_bed_vacant}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-
+      <div />
   );
 
 }
@@ -132,24 +109,12 @@ const gettables=()=>{
   return (
     <>
 
-    <AppBar position="static">
-      <Toolbar>
-      </Toolbar>
-      </AppBar>
-    <Grid container className={classes.MapContainer}>
-        <Grid item sm={12} md={6} style={{ height: '100%', width: '100%' }}>
-
-
        <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef}>
             <TileLayer
               url={osm.maptiler.url}
               attribution={osm.maptiler.attribution}
             />
-
-
-
-        {markerdata!=undefined && getmarkers() }
-        
+        {markerdata!=undefined && getmarkers() }      
         <Marker
                   position={[center.lat, center.lng]}
                   icon={markerIcon2}
@@ -160,24 +125,7 @@ const gettables=()=>{
                     </b>
                   </Popup>
         </Marker>
-
-
-        
-
-
-        
         </MapContainer>
-
-
-      </Grid>
-
-      <Grid item sm={12} md={6}>
-
-      {markerdata!=undefined && gettables()}
-
-      </Grid> 
-
-      </Grid>
 
       </>
     );

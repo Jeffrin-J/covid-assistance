@@ -34,3 +34,4 @@ urllib3==1.26.4
 webdriver-manager==3.4.1
 webdrivermanager==0.10.0
 wrapt==1.12.1
+celery==2.0.3

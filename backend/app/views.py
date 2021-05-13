@@ -54,7 +54,42 @@ class getdata(APIView):
             
         return Response({"hello"})
 
-
+# @periodic_task(run_every=(crontab(seconds = 30)), ignore_result=True)
+# class updateData(APIView):
+#     def get(self, request):
+#         print("done")
+#         url="https://stopcorona.tn.gov.in/beds.php"
+#         df = pd.read_html(url, attrs={"id": "dtBasicExample"})
+#         df = df[0]
+#         df =df.head(25)
+#         df = df.fillna(0)
+#         for i,j in df.iterrows():
+#             try:
+#                 data = list(j)
+#                 hospital = Hospitals.objects.get(data[2])            
+#                 data.pop(0)
+#                 data.pop(1)
+#                 hospital.covid_bed_total=data[2]
+#                 hospital.covid_bed_occupied=data[3]
+#                 hospital.covid_bed_vacant=data[4]
+#                 hospital.oxy_bed_total=data[5]
+#                 hospital.oxy_bed_occupied=data[6] 
+#                 hospital.oxy_bed_vacant=data[7]
+#                 hospital.non_oxy_bed_total=data[8]
+#                 hospital.non_oxy_bed_occupied=data[9]
+#                 hospital.non_oxy_bed_vacant=data[10]
+#                 hospital.icu_bed_total=data[11]
+#                 hospital.icu_bed_occupied=data[12]
+#                 hospital.icu_bed_vacant=data[13]
+#                 hospital.vent_bed_total=data[14]
+#                 hospital.vent_bed_occupied=data[15]
+#                 hospital.vent_bed_vacant=data[16]
+#                 hospital.last_updated=data[17]
+#                 hospital.save()
+                
+#                 return Response({"message":"Hospital found"})
+#             except:
+#                 return Response({"message":"Hospital not found"})
 class Postcurrentloc(ListCreateAPIView):
     serializer_class = LocationSerializer
     queryset = Hospitals.objects.all()

@@ -1,12 +1,12 @@
 import React from 'react';
-import MapContainer from './components/Userlocation';
+import Routes from './routes.js';
 
 
 const App=()=>{
   return(
      <>
      <div>
-     <MapContainer/>
+     <Routes/>
      </div>
      </>
   );
