@@ -1,6 +1,5 @@
 import React, { useState,useEffect} from 'react';
 import GoogleMapReact from 'google-map-react';
-//import Marker from './Marker';
 import datas from './samples';
 import UMarker from './Userlocmaker'
 import axios from 'axios';
@@ -10,8 +9,25 @@ import osm from "./osm-providers";
 import "leaflet/dist/leaflet.css";
 import {Marker, Popup} from "react-leaflet"
 import L from "leaflet"
+import {AppBar, Grid,Toolbar} from '@material-ui/core'
+import { fade, makeStyles } from "@material-ui/core/styles";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
+const useStyles = makeStyles((theme) => ({
+  MapContainer: {
+    paddingTop: "2px",
+    paddingLeft: "2px",
 
+  table: {
+      minWidth: 650,
+    },
+    
+  }}));
 
 
 const markerIcon = new L.Icon({
@@ -21,6 +37,13 @@ const markerIcon = new L.Icon({
   popupAnchor: [0, -46], //[left/right, top/bottom]
 });
 
+
+const markerIcon2 = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/stedman/GeoLocateMe/master/bluedot.png",
+  iconSize: [15, 15],
+  iconAnchor: [17, 46], //[left/right, top/bottom]
+  popupAnchor: [0, -46], //[left/right, top/bottom]
+});
 
 
 
@@ -34,18 +57,20 @@ const Maps = (props) => {
     const [markerdata,setMarkerData]=useState(undefined);
     const ZOOM_LEVEL=11;
 
+    const classes = useStyles();
+
 
     const getmarkers=()=>{
 
       
       return(
-      markerdata.map(data=>{  
-        {console.log(data)}
+      markerdata.map(data=>{
       return(      
-      <Marker position={[data.lat, data.lng]} icon={markerIcon} >
+      <Marker key={data.place} position={[data.lat, data.lng]} icon={markerIcon} >
       <Popup>
       <b>
-      {center.lat}, {center.lng}
+      {console.log(data)}
+      {data.place}
         </b>
       </Popup>
       </Marker>
@@ -53,6 +78,39 @@ const Maps = (props) => {
       })
       );
       }
+
+const gettables=()=>{
+
+  return(
+    
+      <TableContainer>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>HospitalName</TableCell>
+            <TableCell align="right">Covid Beds Total</TableCell>
+            <TableCell align="right">Covid Beds Occpied</TableCell>
+            <TableCell align="right">Covid Beds Vacant</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {markerdata.map((row) => (
+            <TableRow key={row.place}>
+              <TableCell component="th" scope="row">
+                {row.place}
+              </TableCell>
+              <TableCell align="right">{row.covid_bed_total}</TableCell>
+              <TableCell align="right">{row.covid_bed_occupied}</TableCell>
+              <TableCell align="right">{row.covid_bed_vacant}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+
+  );
+
+}
 
 
 
@@ -70,15 +128,16 @@ const Maps = (props) => {
       
     },[]);
 
-
-    // useEffect(()=>{
-    //   getmarkers();
-    // },[markerdata])
-
-
   
   return (
-        <div style={{ height: '100%', width: '100' }}>
+    <>
+
+    <AppBar position="static">
+      <Toolbar>
+      </Toolbar>
+      </AppBar>
+    <Grid container className={classes.MapContainer}>
+        <Grid item sm={12} md={6} style={{ height: '100%', width: '100%' }}>
 
 
        <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef}>
@@ -87,21 +146,13 @@ const Maps = (props) => {
               attribution={osm.maptiler.attribution}
             />
 
-        {/* <UMarker lat={center.lat}
-        lng={center.lng}
-        name="My Marker"
-        color="red"/>
-
-        {console.log(markerdata)} */}
 
 
         {markerdata!=undefined && getmarkers() }
         
-        
-
         <Marker
                   position={[center.lat, center.lng]}
-                  icon={markerIcon}
+                  icon={markerIcon2}
                 >
                   <Popup>
                     <b>
@@ -112,8 +163,23 @@ const Maps = (props) => {
 
 
         
+
+
+        
         </MapContainer>
-      </div>
+
+
+      </Grid>
+
+      <Grid item sm={12} md={6}>
+
+      {markerdata!=undefined && gettables()}
+
+      </Grid> 
+
+      </Grid>
+
+      </>
     );
 }
 

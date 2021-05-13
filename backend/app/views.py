@@ -75,13 +75,19 @@ class Postcurrentloc(ListCreateAPIView):
         h_lat = float(request.data.get('lat'))
         h_lon = float(request.data.get('lng'))
         print(h_lat,h_lon)
-        rad = 1000
+        rad = 500
         result = []
         c=0
         for i in self.get_queryset():
             #print(type(i.latitude))
             if self.dist(h_lat, h_lon, i.latitude, i.longitude)<=rad:
-                result.append({"lat":i.latitude, "lng":i.longitude})
+                result.append({"lat":i.latitude, "lng":i.longitude,"place":i.user.username ,"covid_bed_total":i.covid_bed_total,"covid_bed_occupied":i.covid_bed_occupied,
+                "covid_bed_vacant":i.covid_bed_vacant,"oxy_bed_total":i.oxy_bed_total,"oxy_bed_occupied":i.oxy_bed_occupied,
+                "oxy_bed_vacant":i.oxy_bed_vacant,"non_oxy_bed_total":i.non_oxy_bed_total,"non_oxy_bed_occupied":i.non_oxy_bed_occupied,
+                "non_oxy_bed_vacant":i.non_oxy_bed_vacant,"icu_bed_total":i.icu_bed_total,"icu_bed_occupied":i.icu_bed_occupied,
+                "icu_bed_vacant":i.icu_bed_vacant,"vent_bed_total":i.vent_bed_total,"vent_bed_occupied":i.vent_bed_occupied,
+                "vent_bed_vacant":i.vent_bed_vacant,"last_updated":i.last_updated,"contactnumber":i.contactnumber})
+
                 print(i)
             c+=0
             if c==100:
