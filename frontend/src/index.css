@@ -2,4 +2,8 @@
     height: 91vh;
     width: 100%;
   }
-
+  
+.uniqueName th,
+td {
+  border: 1px solid rgba(224, 224, 224, 1);
+}

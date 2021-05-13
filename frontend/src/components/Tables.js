@@ -8,6 +8,27 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import axios from 'axios';
 import Paper from '@material-ui/core/Paper';
+import { createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
+const theme = createMuiTheme({
+  palette: {
+    type: "dark",
+    secondary: {
+      light: '#757ce8',
+      main: '#3f50b5',
+      dark: '#002884',
+      contrastText: '#fff',
+    },
+    primary: {
+      light: '#ff7961',
+      main: '#f44336',
+      dark: '#ba000d',
+      contrastText: '#000',
+    },
+  },
+});
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -28,15 +49,14 @@ const StyledTableCell = withStyles((theme) => ({
   }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
-    MapContainer: {
-      paddingTop: "2px",
-      paddingLeft: "2px",
   
-      table: {
-        minWidth:400,
-      },
+    table: {
+      minWidth:400,
+      paddig: 10
+    },
+
       
-}}));
+}));
 
 export default function Tables(props) {
     const [markerdata,setMarkerData]=useState(undefined);
@@ -59,9 +79,11 @@ export default function Tables(props) {
     },[]);
 
     return(
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <div>{markerdata!=undefined && 
             <Paper>
-                <TableContainer>
+                <TableContainer className="uniqueName" color="secondary">
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
                         <TableRow>
@@ -93,9 +115,9 @@ export default function Tables(props) {
                             <StyledTableCell align="center">Ventilator Vacant</StyledTableCell>
                         </TableRow>
                         </TableHead>
-                        <TableBody>
+                        <TableBody >
                         {markerdata.map((row) => (
-                            <TableRow key={row.place}>
+                            <StyledTableRow key={row.place} color="secondary">
                             <StyledTableCell component="th" scope="row">
                                 {row.place}
                             </StyledTableCell>
@@ -114,15 +136,15 @@ export default function Tables(props) {
                             <StyledTableCell align="center">{row.vent_bed_total}</StyledTableCell>
                             <StyledTableCell align="center">{row.vent_bed_occupied}</StyledTableCell>
                             <StyledTableCell align="center">{row.vent_bed_vacant}</StyledTableCell>
-                            <StyledTableCell component="th" scope="row">{row.last_updated}</StyledTableCell>
-                            <StyledTableCell component="th" scope="row">{row.contactnumber}</StyledTableCell>
-                            </TableRow>
+                            <StyledTableCell align="center">{row.last_updated}</StyledTableCell>
+                            <StyledTableCell align="center">{(String(row.contactnumber).length > 5) ? row.contactnumber : '-'}</StyledTableCell>
+                            </StyledTableRow>
                         ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </Paper>
         }</div>
-    
+      </ThemeProvider>
     );
 }
