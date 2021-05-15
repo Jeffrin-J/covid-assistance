@@ -70,7 +70,7 @@ const Maps = (props) => {
       <Marker key={data.place} position={[data.lat, data.lng]} icon={markerIcon} >
       <Popup>
       <b>
-      {console.log(data)}
+      {/* {console.log(data)} */}
       {data.place}
         </b>
       </Popup>
@@ -80,19 +80,8 @@ const Maps = (props) => {
       );
       }
 
-const gettables=()=>{
-
-  return(
-    
-      <div />
-  );
-
-}
-
-
-
     useEffect(()=>{
-      console.log(center);
+      console.log("hi");
       axios
       .post("http://localhost:8000/api/postcurrentloc",center)
       .then((res) => {

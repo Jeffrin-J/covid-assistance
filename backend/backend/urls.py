@@ -28,5 +28,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/get', getdata.as_view()),
     path('api/postcurrentloc',Postcurrentloc.as_view()),
+    path('api/validateuser', VerifyLogin.as_view()),
 ]
 

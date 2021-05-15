@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Hospitals(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    Hospital_name = models.CharField(max_length = 50, null=True)
     district = models.TextField(max_length=20)
     covid_bed_total = models.IntegerField()
     covid_bed_occupied = models.IntegerField()

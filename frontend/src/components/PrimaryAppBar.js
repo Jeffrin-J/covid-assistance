@@ -32,6 +32,9 @@ import {Container,CssBaseline,Avatar,Checkbox} from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import axios from 'axios';
 import { red } from '@material-ui/core/colors';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -123,17 +126,32 @@ export default function PrimaryAppBar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const [username,setUserName]=React.useState(null);
-  const [password,setPassword]=React.useState(null);
+  const [username,setUserName]=React.useState("");
+  const [password,setPassword]=React.useState("");
   const [EmailError,setEmailerror]=React.useState("");
-
+  const [RegisterUserName,setRegisterUserName]=React.useState("");
+  const [RegisterPassword,setRegisterPassword]=React.useState("");
+  const [NewRegisterPassword,setNewRegisterPassword]=React.useState("");
+  const [PasswordError,setPasswordError]=React.useState("");
+  const [register,setRegister]=React.useState(0);
+  const [hospital_name,setHospital_name]=React.useState("");
   const handleClickOpen = () => {
     setOpen(true);
+    setRegister(0);
   };
 
-  const handleClose = () => {
+  const handleClose = (e) => {
     setOpen(false);
+
+    e.preventDefault();
   };
+
+  const handleClickOpens=()=>{
+
+    setOpen(true);
+    setRegister(1);
+
+  }
   
 
 
@@ -158,19 +176,6 @@ export default function PrimaryAppBar() {
   };
 
 
-  const handlesubmit=(e)=>{
-      axios
-        .post("http://localhost:8000/api/checkuser",[username,password])
-        .then((res) => {
-          if (res.data=="correct") {
-
-          }
-          else
-          {
-            setEmailerror("invalid credentials");
-          }
-        });
-  };
   
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -266,7 +271,52 @@ export default function PrimaryAppBar() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  
+  
+  const handlesubmit=(e)=>{
+    e.preventDefault();
+    axios
+      .post("http://localhost:8000/api/validateuser",{username:username,password:password})
+      .then((res) => {
+        console.log(res)
+        if (res.data.message=="Logged in") {
+          //return redirect;
+        }
+        else 
+        {
+          setEmailerror(res.data.message)
+        }
+        
+      });
+  };
 
+
+  const handleRegistersubmit=(e)=>{
+    e.preventDefault();
+    
+    if(RegisterPassword!=NewRegisterPassword)
+    {
+
+      setPasswordError("check the password");
+
+    }
+
+    else{
+
+    axios
+      .post("http://localhost:8000/api/get",{username: RegisterUserName,password: RegisterPassword, hospital_name: hospital_name})
+      .then((res) => {
+        if (res.data.message=="user created successfully") {
+
+        }
+        else
+        {
+          setPasswordError(res.data.message);
+        }
+      });
+
+    }
+  };
 
   
   return (
@@ -294,11 +344,19 @@ export default function PrimaryAppBar() {
           
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-          <div className={classes.spacing}>
-      <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+      <div className={classes.spacing}>
+      <Button variant="contained" color="secondary"  onClick={handleClickOpen}>
         LOGIN
       </Button>
-      <Dialog
+      </div>
+
+      <div className={classes.spacing}>
+      <Button variant="contained" color="secondary" onClick={handleClickOpens}>
+        REGISTER
+      </Button>
+      </div>
+
+      {register==0 && (<Dialog
         fullWidth='checked'
         maxWidth='sm'
         open={open}
@@ -309,10 +367,12 @@ export default function PrimaryAppBar() {
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
+          <AccountCircleIcon />
         </Avatar>
 
-        <form className={classes.form} onSubmit={handlesubmit()}>
+        <form className={classes.form}  >
+
+
           <TextField onChange={(e)=>setUserName(e.target.value)}
             variant="outlined"
             margin="normal"
@@ -320,12 +380,12 @@ export default function PrimaryAppBar() {
             fullWidth
             id="email"
             label="User Name"
-            name="email"
+            name="username"
             autoComplete="email"
             value={username}
             autoFocus
           />
-          {EmailError!="" &&(<p className={classes.error}> <i class="fa fa-exclamation-circle fa-s" aria-hidden="true"></i>{"  "+EmailError}</p>)}
+          
           <TextField onChange={(e)=>setPassword(e.target.value)}
             variant="outlined"
             margin="normal"
@@ -342,11 +402,14 @@ export default function PrimaryAppBar() {
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
+
+{EmailError!="" &&(<p className={classes.error}><ErrorOutlineIcon color='error'/> {"  "+EmailError}</p>)}
           <Button
-            type="submit"
+            onClick = {handlesubmit}
             fullWidth
             variant="contained"
             color="primary"
+            type='submit'
             className={classes.submit}
           >
             Sign In
@@ -368,20 +431,111 @@ export default function PrimaryAppBar() {
       </Container>
         </DialogContent>
         <DialogActions>
+          <Button onClick={(e)=>handleClose(e)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>)}
+      
+      {register==1 &&(
+      <Dialog
+        fullWidth='checked'
+        maxWidth='sm'
+        open={open}
+        onClose={handleClose}
+      >
+        <DialogContent>
+        <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <PersonAddIcon />
+        </Avatar>
+        
+        <form className={classes.form} >
+          <TextField onChange={(e)=>{setRegisterUserName(e.target.value)}}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="User Name"
+            name="email"
+            autoComplete="email"
+            value={RegisterUserName}
+            autoFocus
+          />
+
+          <TextField onChange={(e)=>setHospital_name(e.target.value)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Hospital Name"
+            name="username"
+            autoComplete="email"
+            value={hospital_name}
+            
+          />  
+
+          <TextField onChange={(e)=>setRegisterPassword(e.target.value)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            value={RegisterPassword}
+            autoComplete="current-password"
+          />
+
+          <TextField onChange={(e)=>setNewRegisterPassword(e.target.value)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Confirm Password"
+            type="password"
+            id="password"
+            value={NewRegisterPassword}
+            autoComplete="current-password"
+          />
+
+{PasswordError!="" &&(<p className={classes.error}> <ErrorOutlineIcon color='error'/> {"  "+PasswordError}</p>)}
+
+
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={handleRegistersubmit}
+            className={classes.submit}
+          >
+            Sign Up
+          </Button>
+        </form>
+      </div>
+      </Container>
+        </DialogContent>
+        <DialogActions>
           <Button onClick={handleClose} color="primary">
             Close
           </Button>
         </DialogActions>
       </Dialog>
-      </div>
+      )}
 
-      <div className={classes.spacing}>
-      <Button variant="contained" color="secondary">
-        REGISTER
-      </Button>
-      </div>
 
-          </div>
+      </div>
           <div className={classes.sectionMobile}>
             <IconButton
               aria-label="show more"

@@ -11,19 +11,24 @@ from math import dist, radians, cos, sin, asin, sqrt
 from selenium import webdriver
 from time import sleep
 from webdriver_manager.chrome import ChromeDriverManager
-import celery
+from django.contrib.auth import authenticate
+import tweepy
+import traceback
 
 class getdata(APIView):
-    def get(self, request):
+    def post(self, request):
         url="https://stopcorona.tn.gov.in/beds.php"
         df = pd.read_html(url, attrs={"id": "dtBasicExample"})
-        df = df[0]
-        df =df.head(25)
-        df = df.fillna(0)
+        df = df[0].fillna(0)
         driver1 = ChromeDriverManager().install()
+        inst = list(df.Institution.Institution)
+        print(request.data)
+        try:
+            ind = [i for i in range(len(inst)) if inst[i].lower() == request.data["hospital_name"].lower()]
+            ind = ind[0]       
 
-        for i,j in df.iterrows():
-            data=list(j)
+            data = df.iterrows()
+            data=list(list(data)[ind][1])
             address=data[2]+","+data[1]
             options = webdriver.ChromeOptions()
             options.add_argument('headless')
@@ -37,23 +42,24 @@ class getdata(APIView):
             sleep(2)
             url = driver.current_url
             driver.close()
-            print(url)
             url = url[url.index('@')+1:].split(",")[:2]
 
-            user = User(username = data[2])
-            user.set_password("admin")
+            user = User(username = request.data["username"])
+            user.set_password(request.data["password"])
             user.save()
-            
+            print(url)
+            print(data)
             data.pop(0)
-            data.pop(1)
+            hospital = data.pop(1)
             data.pop(-1)
             data.insert(0,user)
             data.extend([0,0,0,0,0,float(url[0]),float(url[1])])
-            print(data)
-            Hospitals(user= user, district=data[1], covid_bed_total=data[2], covid_bed_occupied=data[3], covid_bed_vacant=data[4], oxy_bed_total=data[5], oxy_bed_occupied=data[6], oxy_bed_vacant=data[7], non_oxy_bed_total=data[8], non_oxy_bed_occupied=data[9], non_oxy_bed_vacant=data[10], icu_bed_total=data[11], icu_bed_occupied=data[12], icu_bed_vacant=data[13], vent_bed_total=data[14], vent_bed_occupied=data[15], vent_bed_vacant=data[16], last_updated=data[17], contactnumber=data[18], no_applied_covid=data[19], no_applied_oxy=data[20], no_applied_nonOxy=data[21], no_applied_icu=data[22], no_applied_vent=data[23], latitude=data[24], longitude=data[25]).save()
             
-            
-        return Response({"hello"})
+            Hospitals(user= user, Hospital_name = hospital, district=data[1], covid_bed_total=data[2], covid_bed_occupied=data[3], covid_bed_vacant=data[4], oxy_bed_total=data[5], oxy_bed_occupied=data[6], oxy_bed_vacant=data[7], non_oxy_bed_total=data[8], non_oxy_bed_occupied=data[9], non_oxy_bed_vacant=data[10], icu_bed_total=data[11], icu_bed_occupied=data[12], icu_bed_vacant=data[13], vent_bed_total=data[14], vent_bed_occupied=data[15], vent_bed_vacant=data[16], last_updated=data[17], contactnumber=data[18], no_applied_covid=data[19], no_applied_oxy=data[20], no_applied_nonOxy=data[21], no_applied_icu=data[22], no_applied_vent=data[23], latitude=data[24], longitude=data[25]).save()     
+            return Response({"message":"user created successfully"})
+        except:
+            traceback.print_exc()
+            return Response({"message":"Hospital not found in the database"})
 
     
 class Postcurrentloc(ListCreateAPIView):
@@ -72,10 +78,10 @@ class Postcurrentloc(ListCreateAPIView):
         return km
 
     def post(self, request):
-        print(request.data)
+        
         h_lat = float(request.data.get('lat'))
         h_lon = float(request.data.get('lng'))
-        print(h_lat,h_lon)
+        
         rad = 500
         result = []
         c=0
@@ -89,13 +95,44 @@ class Postcurrentloc(ListCreateAPIView):
                 "icu_bed_vacant":i.icu_bed_vacant,"vent_bed_total":i.vent_bed_total,"vent_bed_occupied":i.vent_bed_occupied,
                 "vent_bed_vacant":i.vent_bed_vacant,"last_updated":i.last_updated,"contactnumber":i.contactnumber})
 
-                print(i)
+                
             c+=0
             if c==100:
                 break
         return Response(result)
 
 
+class VerifyLogin(ListCreateAPIView):
+    serializer_class = LoginSerializer
+    queryset = User.objects.all()
+    
+    def post(self, request):
+        data = request.data
+        print(data["username"], data["password"])
+        user = authenticate(username=data["username"], password=data["password"])
+
+        if user is not None:
+            return Response({"message":"Logged in"})
+        else:
+            if not User.objects.filter(username = data["username"]).exists():
+                return Response({"message":"user not found"})
+            else:
+                return Response({"message":"Invalid password"})
+
+
+class Tweet(APIView):
+    consumer_key ="xxxxxxxxxxxxxxxx"
+    consumer_secret ="xxxxxxxxxxxxxxxx"
+    access_token ="xxxxxxxxxxxxxxxx"
+    access_token_secret ="xxxxxxxxxxxxxxxx"
+
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+
+    api = tweepy.API(auth)
+    def post(self, request):
+        data = request.data
+        self.api.update_status(status = data.message)
 
 
 
