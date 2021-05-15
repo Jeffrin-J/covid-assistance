@@ -19,8 +19,19 @@ import Box from '@material-ui/core/Box';
 import { Link, Redirect } from 'react-router-dom';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import TableContainer from './TableContainer.js';
-import Maps from './Maps.js';
 import MapContainer from './Userlocation.js';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputLabel from '@material-ui/core/InputLabel';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import {Container,CssBaseline,Avatar,Checkbox} from '@material-ui/core';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import axios from 'axios';
+import { red } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -64,6 +75,40 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
   },
+
+  spacing: {
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+  },
+
+  paper: {
+    marginTop: theme.spacing(0),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(0),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  inputborder:{
+    border:red 
+  },
+  error:{
+    color: red,
+    fontsize: 'small',
+    fontweight: 'lighter!important', 
+    textalign: 'center !important',
+  },
+  
   
 }));
 
@@ -74,10 +119,23 @@ export default function PrimaryAppBar() {
     
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [open, setOpen] = React.useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const [username,setUserName]=React.useState(null);
+  const [password,setPassword]=React.useState(null);
+  const [EmailError,setEmailerror]=React.useState("");
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  
+
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -97,6 +155,21 @@ export default function PrimaryAppBar() {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
     event.preventDefault()
+  };
+
+
+  const handlesubmit=(e)=>{
+      axios
+        .post("http://localhost:8000/api/checkuser",[username,password])
+        .then((res) => {
+          if (res.data=="correct") {
+
+          }
+          else
+          {
+            setEmailerror("invalid credentials");
+          }
+        });
   };
   
   const menuId = 'primary-search-account-menu';
@@ -221,20 +294,93 @@ export default function PrimaryAppBar() {
           
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton color="inherit">
-              
-                <Typography>
-                  Login
-                </Typography>
-              
-            </IconButton>
-            <IconButton  color="inherit">
-              
-                <Typography>
-                  Register
-                </Typography>
-              
-            </IconButton>
+          <div className={classes.spacing}>
+      <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+        LOGIN
+      </Button>
+      <Dialog
+        fullWidth='checked'
+        maxWidth='sm'
+        open={open}
+        onClose={handleClose}
+      >
+        <DialogContent>
+        <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+
+        <form className={classes.form} onSubmit={handlesubmit()}>
+          <TextField onChange={(e)=>setUserName(e.target.value)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="User Name"
+            name="email"
+            autoComplete="email"
+            value={username}
+            autoFocus
+          />
+          {EmailError!="" &&(<p className={classes.error}> <i class="fa fa-exclamation-circle fa-s" aria-hidden="true"></i>{"  "+EmailError}</p>)}
+          <TextField onChange={(e)=>setPassword(e.target.value)}
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            value={password}
+            autoComplete="current-password"
+          />
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign In
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link href="#" variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
+      </Container>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      </div>
+
+      <div className={classes.spacing}>
+      <Button variant="contained" color="secondary">
+        REGISTER
+      </Button>
+      </div>
+
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

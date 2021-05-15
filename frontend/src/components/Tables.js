@@ -51,8 +51,8 @@ const StyledTableCell = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   
     table: {
-      minWidth:400,
-      paddig: 10
+      minWidth:'100px',
+      paddig: 10,
     },
 
       
@@ -83,8 +83,8 @@ export default function Tables(props) {
         <CssBaseline />
         <div>{markerdata!=undefined && 
             <Paper>
-                <TableContainer className="uniqueName" color="secondary">
-                    <Table className={classes.table} aria-label="simple table">
+                <TableContainer className={classes.table} color="secondary">
+                    <Table stickyHeader aria-label="simple table">
                         <TableHead>
                         <TableRow>
                             <StyledTableCell rowspan={2}>HospitalName</StyledTableCell>
