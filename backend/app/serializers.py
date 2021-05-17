@@ -17,3 +17,13 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("username", "password")
+
+class GetRequestsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Applied
+        fields = '__all__'
+
+class ShowRequestSErializer(serializers.ModelSerializer):
+    class Meta:
+        model = Applied
+        fields = ("hospital",)

@@ -34,4 +34,12 @@ class Hospitals(models.Model):
     def __str__(self) -> str:
         return self.user.username
 
+class Applied(models.Model):
+    name = models.CharField(max_length=20)
+    email = models.EmailField()
+    phone_number = models.PositiveBigIntegerField()
+    bed_type = models.CharField(max_length=20, choices=((1, "Covid Bed"),(2, "Oxygen Bed"),(3, "Non oxygen Bed"),(4, "ICU Bed"),(5, "Ventilator Bed")))
+    hospital = models.CharField(max_length=50, null=True)
+    timestamp = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=1, choices=((0,"Visible"),(1,"Invisible")), default=0)
 

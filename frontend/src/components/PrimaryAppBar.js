@@ -135,6 +135,7 @@ export default function PrimaryAppBar() {
   const [PasswordError,setPasswordError]=React.useState("");
   const [register,setRegister]=React.useState(0);
   const [hospital_name,setHospital_name]=React.useState("");
+  const [logged, setlogged]=React.useState(0);
   const handleClickOpen = () => {
     setOpen(true);
     setRegister(0);
@@ -205,7 +206,7 @@ export default function PrimaryAppBar() {
     >
       <MenuItem>
         <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
+          <Badge badgeContent={4} color="secondary">e
             <MailIcon />
           </Badge>
         </IconButton>
@@ -280,7 +281,8 @@ export default function PrimaryAppBar() {
       .then((res) => {
         console.log(res)
         if (res.data.message=="Logged in") {
-          //return redirect;
+          console.log(res.data.message);
+          setlogged(1);
         }
         else 
         {
@@ -306,7 +308,7 @@ export default function PrimaryAppBar() {
     axios
       .post("http://localhost:8000/api/get",{username: RegisterUserName,password: RegisterPassword, hospital_name: hospital_name})
       .then((res) => {
-        if (res.data.message=="user created successfully") {
+        if (res.data.message==="user created successfully") {
 
         }
         else
@@ -561,6 +563,8 @@ export default function PrimaryAppBar() {
 
       {renderMobileMenu}
       {renderMenu}
+
+      {logged==1 && (<Redirect to={`/dashboard/${username}`}  />)}
     </div>
   );
 }

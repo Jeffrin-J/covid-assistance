@@ -6,7 +6,7 @@ from rest_framework.response import Response
 import pandas as pd
 from .serializers import *
 from geopy.geocoders import Nominatim
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import CreateAPIView, ListCreateAPIView
 from math import dist, radians, cos, sin, asin, sqrt
 from selenium import webdriver
 from time import sleep
@@ -14,6 +14,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from django.contrib.auth import authenticate
 import tweepy
 import traceback
+from django.core.mail import send_mail
 
 class getdata(APIView):
     def post(self, request):
@@ -135,5 +136,71 @@ class Tweet(APIView):
         self.api.update_status(status = data.message)
 
 
+class BedRequest(ListCreateAPIView):
+    serializer_class = GetRequestsSerializer
+    queryset = None
+
+    def post(self, request):
+        try:
+            data = request.data
+            Applied(name = data["name"], email = data["email"], phone_number = data["phone_number"], bed_type = data["bed_type"], hospital = Hospitals.objects.get(Hospital_name = data["hospital"]).user).save()
+            hospital = Hospitals.objects.get(Hospital_name = data["hospital"])
+            
+            if data["bed_type"] == "Covid Bed":
+                hospital.no_applied_covid += 1
+            elif data["bed_type"] == "Oxygen Bed":
+                hospital.no_applied_oxy += 1
+            
+            elif data["bed_type"] == "Non oxygen Bed":
+                hospital.no_applied_nonOxy += 1
+            
+            elif data["bed_type"] == "ICU Bed":
+                hospital.no_applied_icu += 1
+            
+            else:
+                hospital.no_applied_vent += 1
+            hospital.save()
+            data = request.data
+            subject = data["name"]+" has applied for a "+data["bed_type"]+" in "+data["hospital."]
+            send_mail("Application for bed sent", subject, "pythonformail@gmail.com", data["email"], fail_silently=True)
+            return Response({"message":"Success"})
+        except:
+            #traceback.print_exc()
+            return Response({"message":"Try after sometime"})
+
+class GetBedRequests(ListCreateAPIView):
+    serializer_class = ShowRequestSErializer
+
+    def post(self, request):
+        query_set = Applied.objects.filter(hospital=self.request.data["hospital"])
+        print(Hospitals.objects.get(Hospital_name=self.request.data["hospital"]).Hospital_name)
+        print(Applied.objects.filter(hospital=self.request.data["hospital"]))
+        return Response(query_set.values())
+
+    def get_queryset(self):
+        return None
+
+
+class AcceptOrReject(APIView):
+
+    def sendMail(self, title, message, to_mail):
+        send_mail(title, message, "pythonformail@gmail.com", to_mail, fail_silently=True)
+
+    def post(self, request):
+        try:
+            data = request.data
+            application = Applied.objects.get(id=data.id)
+            if data.status == "accept":
+                title = "Application for bed accepted"
+                message = "Your application for "+application.bed_type+" at "+application.hospital+" has been accepted. Please visit the hospital."
+                self.sendMail(title, message, application.email)
+            
+            else:
+                title = "Application for bed rejected"
+                message = "Your application for "+application.bed_type+" at "+application.hospital+" has been rejected. The following is the reason stated by the hospital: "+application.reason
+                self.sendMail(title, message, application.email)
+            return Response({"message":"Mail sent"})
+        except:
+            return Response({"message": "Error sending mail"})
 
 

@@ -29,5 +29,8 @@ urlpatterns = [
     path('api/get', getdata.as_view()),
     path('api/postcurrentloc',Postcurrentloc.as_view()),
     path('api/validateuser', VerifyLogin.as_view()),
+    path('api/getrequests', GetBedRequests.as_view()),
+    path('api/requestbed', BedRequest.as_view()),
+    path('api/acceptOrReject', AcceptOrReject.as_view()),
 ]
 
