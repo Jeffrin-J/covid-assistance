@@ -130,14 +130,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PrimaryAppBar() {
   
-    
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const [username,setUserName]=React.useState("");
+  const [username,setUserName]=React.useState(sessionStorage.getItem("username"));
   const [password,setPassword]=React.useState("");
   const [EmailError,setEmailerror]=React.useState("");
   const [RegisterUserName,setRegisterUserName]=React.useState("");
@@ -146,11 +145,16 @@ export default function PrimaryAppBar() {
   const [PasswordError,setPasswordError]=React.useState("");
   const [register,setRegister]=React.useState(0);
   const [hospital_name,setHospital_name]=React.useState("");
-  const [logged, setlogged]=React.useState(0);
+  //console.log(sessionStorage.getItem("logged"));
+  const [logged, setlogged]= React.useState(sessionStorage.getItem("logged") !== null ?  parseInt(sessionStorage.getItem("logged")) : 0);
   const [values, setValues] = React.useState({
     showPassword: false,
   });
   
+  // console.log(logged);
+  // console.log(sessionStorage);
+  // console.log("logged");
+
   const handleClickOpen = () => {
     setOpen(true);
     setRegister(0);
@@ -201,7 +205,10 @@ export default function PrimaryAppBar() {
     .post("http://localhost:8000/api/logout",{})
     .then((res) => {
       if (res.data.message==="Success") {
+        sessionStorage.setItem("logged",0);
+        sessionStorage.setItem("username","");
         alert("successfully logged out")
+
       }
       else{
         alert(res.data.message);
@@ -230,7 +237,8 @@ export default function PrimaryAppBar() {
   
   const renderMobileMenu = (
     <div>
-      {(logged === 0) ?
+      {
+      (logged === 0) ?
         (
           <Menu
             anchorEl={mobileMoreAnchorEl}
@@ -317,6 +325,8 @@ export default function PrimaryAppBar() {
       .then((res) => {
         console.log(res)
         if (res.data.message==="Logged in") {
+          sessionStorage.setItem("logged",1);
+          sessionStorage.setItem("username",username);
           handleClose();
           setlogged(1);
         }
@@ -415,7 +425,7 @@ export default function PrimaryAppBar() {
       
 
       {register===0 && (<Dialog
-        fullWidth='checked'
+        fullWidth='unchecked'
         maxWidth='sm'
         open={open}
         onClose={handleClose}

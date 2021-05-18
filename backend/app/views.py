@@ -142,7 +142,7 @@ class BedRequest(ListCreateAPIView):
             for i in data:
                 print(i.Hospital_name)
                 i.Hospital_name = i.user.username
-                i.save() """
+                i.save()"""
             data = request.data
             Applied(name = data["name"], email = data["email"], phone_number = data["phone_number"], bed_type = data["bed_type"], hospital = Hospitals.objects.get(Hospital_name = data["hospital"]).user).save()
             hospital = Hospitals.objects.get(Hospital_name = data["hospital"])
@@ -188,6 +188,7 @@ class AcceptOrReject(APIView):
     def post(self, request):
         try:
             data = request.data
+            #print(data)
             application = Applied.objects.get(id=data["id"])
             if data["status"] == "accept":
                 title = "Application for bed accepted"
@@ -200,15 +201,15 @@ class AcceptOrReject(APIView):
                 self.sendMail(title, message, (application.email,))
             application.status = 1
             hospital = Hospitals.objects.get(Hospital_name = application.hospital)
-            if data["bed_type"] == "Covid Bed":
+            if application.bed_type == "Covid Bed":
                 hospital.no_applied_covid -= 1
-            elif data["bed_type"] == "Oxygen Bed":
+            elif application.bed_type == "Oxygen Bed":
                 hospital.no_applied_oxy -= 1
             
-            elif data["bed_type"] == "Non oxygen Bed":
+            elif application.bed_type == "Non oxygen Bed":
                 hospital.no_applied_nonOxy -= 1
             
-            elif data["bed_type"] == "ICU Bed":
+            elif application.bed_type == "ICU Bed":
                 hospital.no_applied_icu -= 1
             
             else:
@@ -218,7 +219,7 @@ class AcceptOrReject(APIView):
             application.save()
             return Response({"message":"Mail sent"})
         except:
-            #traceback.print_exc()
+            traceback.print_exc()
             return Response({"message": "Error sending mail"})
 
 @api_view(['POST'])

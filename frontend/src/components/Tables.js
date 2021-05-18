@@ -143,16 +143,17 @@ export default function Tables(props) {
       e.preventDefault();
     };
 
-    const handleSubmit=(e)=>{
-      e.preventDefault();
+    const handleRequestSubmit=(e)=>{
       
       axios
         .post("http://localhost:8000/api/requestbed",{name: UserName, email: Email, phone_number:Phone, bed_type:bedtype, hospital:HospitalName})
         .then((res) => {
           if (res.data.message==="Success") {
-            console.log(res.data.message);
+            //console.log(res.data.message);
+            alert(res.data.message);
           }
         });
+      handleClose();
     };
     
     useEffect(()=>{
@@ -310,7 +311,7 @@ export default function Tables(props) {
                                         fullWidth
                                         variant="contained"
                                         color="primary"
-                                        onClick = {handleSubmit}
+                                        onClick = {handleRequestSubmit}
                                         className={classes.submit}
                                       >
                                         Submit

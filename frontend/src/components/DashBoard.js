@@ -82,6 +82,7 @@ export default function DashBoard(props){
     const [Reason,SetReason]=useState("");
     const [ReasonBit,SetReasonBit]=useState(0);
     const [reset, setreset] = useState(0);
+    const [reset1, setreset1] = useState(0);
 
     useEffect(()=>{
         axios
@@ -94,10 +95,10 @@ export default function DashBoard(props){
         setreset(0);
     },[reset]);
 
-    const handlesubmit=(id,status,email,bed_type,hospitalname) => {
-        
+    const handlesubmit=(id,status) => {
+        console.log(id);
         axios
-        .post("http://localhost:8000/api/acceptOrReject",{id:id,status:status,Reason:Reason,email:email,bed_type:bed_type,hospital:hospitalname})
+        .post("http://localhost:8000/api/acceptOrReject",{id:id,status:status,Reason:Reason})
         .then((res) => {
           if (res.data.message==="Mail sent") {
             console.log(res.data.message);
@@ -110,6 +111,38 @@ export default function DashBoard(props){
         });
     }
 
+    useEffect(()=>{
+        setreset1(0);
+    },[reset1])
+
+    const handleReject = (ind) =>{
+        let pos = beddata.map(function(e) { return e.id; }).indexOf(ind);
+        let arr=beddata
+        
+        if(arr.length===pos+1 ||arr[pos+1].reason===undefined)
+        {
+            arr.splice(pos+1,0,{identity:ind,reason:"reason"})
+            SetBedData(arr);
+            setreset1(1);
+        }
+        console.log(beddata)
+    }
+
+    const handleonclick = () => {
+        console.log("Hi")
+        SetReasonBit(0);
+    }
+
+    const handlecloseIcon=(id)=>{
+        
+        let pos = beddata.map(function(e) { return e.id; }).indexOf(id);
+        let arr=beddata
+        arr.splice(pos+1,1);
+        SetBedData(arr);
+        setreset1(1);
+    }
+
+    
     return (
         <>
         <div>{(beddata!==undefined) && (beddata.length > 0)?(
@@ -129,17 +162,18 @@ export default function DashBoard(props){
                         <TableBody >
                             {beddata.map((row) => (
                                 <>
-                                <StyledTableRow key={row.name} color="secondary">
+                                {console.log(row.reason)}
+                                {row.reason===undefined && <StyledTableRow key={row.name} color="secondary">
                                     <StyledTableCell component="th" scope="row">{row.name}</StyledTableCell>
                                     <StyledTableCell align="center">{row.email}</StyledTableCell>
                                     <StyledTableCell align="center">{row.bed_type}</StyledTableCell>
                                     <StyledTableCell align="center">{row.phone_number}</StyledTableCell>
                                     <StyledTableCell align="center">{row.timestamp}</StyledTableCell>
                                     <StyledTableCell align="center">{<Button variant="contained" color="secondary" onClick = {()=>handlesubmit(row.id, "accept",row.email,row.bed_type,row.name)}>Accept</Button>}</StyledTableCell>
-                                    <StyledTableCell align="center">{<Button variant="contained" color="secondary" onClick = {()=>SetReasonBit(1)}>Reject</Button>}</StyledTableCell>
-                                </StyledTableRow>
-                                
-                                {ReasonBit===1 && <StyledTableRow>
+                                    <StyledTableCell align="center">{<Button variant="contained" color="secondary" onClick = {()=>handleReject(row.id)}>Reject</Button>}</StyledTableCell>
+                                </StyledTableRow>}
+                                {console.log(row.reason==="reason")}
+                                {row.reason==="reason" && <StyledTableRow key={row.name}>
                                 <StyledTableCell colSpan={5}>
                                         <TextField onChange={(e)=>{SetReason(e.target.value)}}
                                         variant="outlined"
@@ -156,14 +190,16 @@ export default function DashBoard(props){
                                       </StyledTableCell>
 
                                       <StyledTableCell align="center" colSpan={1}>
-                                      <Button variant='contained' color='secondary' onClick={()=>handlesubmit(row.id, "reject",row.email,row.bed_type,row.name)}>
+                                        
+                                      <Button variant='contained' color='secondary' onClick={()=>handlesubmit(row.identity, "reject")}>
                                       SUBMIT
                                       </Button>    
                                       </StyledTableCell>
                                       <StyledTableCell align="center">
-                                      <CloseIcon color="secondary" fontSize="large"  />
+                                      <CloseIcon color="secondary" fontSize="large" onClick={()=>handlecloseIcon(row.identity)} />
                                       </StyledTableCell>
                                       </StyledTableRow>}
+                                      
                                 </>
                                 
                             ))}
