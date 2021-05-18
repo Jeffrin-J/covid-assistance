@@ -11,7 +11,7 @@ from math import dist, radians, cos, sin, asin, sqrt
 from selenium import webdriver
 from time import sleep
 from webdriver_manager.chrome import ChromeDriverManager
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login, logout
 import tweepy
 import traceback
 from django.core.mail import send_mail
@@ -23,7 +23,6 @@ class getdata(APIView):
         df = df[0].fillna(0)
         driver1 = ChromeDriverManager().install()
         inst = list(df.Institution.Institution)
-        print(request.data)
         try:
             ind = [i for i in range(len(inst)) if inst[i].lower() == request.data["hospital_name"].lower()]
             ind = ind[0]       
@@ -48,8 +47,6 @@ class getdata(APIView):
             user = User(username = request.data["username"])
             user.set_password(request.data["password"])
             user.save()
-            print(url)
-            print(data)
             data.pop(0)
             hospital = data.pop(1)
             data.pop(-1)
@@ -59,7 +56,7 @@ class getdata(APIView):
             Hospitals(user= user, Hospital_name = hospital, district=data[1], covid_bed_total=data[2], covid_bed_occupied=data[3], covid_bed_vacant=data[4], oxy_bed_total=data[5], oxy_bed_occupied=data[6], oxy_bed_vacant=data[7], non_oxy_bed_total=data[8], non_oxy_bed_occupied=data[9], non_oxy_bed_vacant=data[10], icu_bed_total=data[11], icu_bed_occupied=data[12], icu_bed_vacant=data[13], vent_bed_total=data[14], vent_bed_occupied=data[15], vent_bed_vacant=data[16], last_updated=data[17], contactnumber=data[18], no_applied_covid=data[19], no_applied_oxy=data[20], no_applied_nonOxy=data[21], no_applied_icu=data[22], no_applied_vent=data[23], latitude=data[24], longitude=data[25]).save()     
             return Response({"message":"user created successfully"})
         except:
-            traceback.print_exc()
+            #traceback.print_exc()
             return Response({"message":"Hospital not found in the database"})
 
     
@@ -87,7 +84,6 @@ class Postcurrentloc(ListCreateAPIView):
         result = []
         c=0
         for i in self.get_queryset():
-            #print(type(i.latitude))
             if self.dist(h_lat, h_lon, i.latitude, i.longitude)<=rad:
                 result.append({"lat":i.latitude, "lng":i.longitude,"place":i.user.username ,"covid_bed_total":i.covid_bed_total,"covid_bed_occupied":i.covid_bed_occupied,
                 "covid_bed_vacant":i.covid_bed_vacant,"oxy_bed_total":i.oxy_bed_total,"oxy_bed_occupied":i.oxy_bed_occupied,
@@ -109,10 +105,10 @@ class VerifyLogin(ListCreateAPIView):
     
     def post(self, request):
         data = request.data
-        print(data["username"], data["password"])
         user = authenticate(username=data["username"], password=data["password"])
 
         if user is not None:
+            login(request, user)
             return Response({"message":"Logged in"})
         else:
             if not User.objects.filter(username = data["username"]).exists():
@@ -142,6 +138,11 @@ class BedRequest(ListCreateAPIView):
 
     def post(self, request):
         try:
+            """ data = Hospitals.objects.all()
+            for i in data:
+                print(i.Hospital_name)
+                i.Hospital_name = i.user.username
+                i.save() """
             data = request.data
             Applied(name = data["name"], email = data["email"], phone_number = data["phone_number"], bed_type = data["bed_type"], hospital = Hospitals.objects.get(Hospital_name = data["hospital"]).user).save()
             hospital = Hospitals.objects.get(Hospital_name = data["hospital"])
@@ -161,8 +162,8 @@ class BedRequest(ListCreateAPIView):
                 hospital.no_applied_vent += 1
             hospital.save()
             data = request.data
-            subject = data["name"]+" has applied for a "+data["bed_type"]+" in "+data["hospital."]
-            send_mail("Application for bed sent", subject, "pythonformail@gmail.com", data["email"], fail_silently=True)
+            subject = "Dear " + data["name"]+"\n   You have applied for a "+data["bed_type"]+" in "+data["hospital"]
+            send_mail("Application for bed sent", subject, "pythonformail@gmail.com", (data["email"], ), fail_silently=True)
             return Response({"message":"Success"})
         except:
             #traceback.print_exc()
@@ -172,9 +173,7 @@ class GetBedRequests(ListCreateAPIView):
     serializer_class = ShowRequestSErializer
 
     def post(self, request):
-        query_set = Applied.objects.filter(hospital=self.request.data["hospital"])
-        print(Hospitals.objects.get(Hospital_name=self.request.data["hospital"]).Hospital_name)
-        print(Applied.objects.filter(hospital=self.request.data["hospital"]))
+        query_set = Applied.objects.filter(hospital=self.request.data["hospital"], status = 0)
         return Response(query_set.values())
 
     def get_queryset(self):
@@ -189,18 +188,47 @@ class AcceptOrReject(APIView):
     def post(self, request):
         try:
             data = request.data
-            application = Applied.objects.get(id=data.id)
-            if data.status == "accept":
+            application = Applied.objects.get(id=data["id"])
+            if data["status"] == "accept":
                 title = "Application for bed accepted"
-                message = "Your application for "+application.bed_type+" at "+application.hospital+" has been accepted. Please visit the hospital."
-                self.sendMail(title, message, application.email)
+                message = "\nDear " + application.name +"\n\nYour application for "+application.bed_type+" at "+application.hospital+" has been accepted.\n\nPlease visit the hospital."
+                self.sendMail(title, message, (application.email,))
             
             else:
                 title = "Application for bed rejected"
-                message = "Your application for "+application.bed_type+" at "+application.hospital+" has been rejected. The following is the reason stated by the hospital: "+application.reason
-                self.sendMail(title, message, application.email)
+                message = "\nDear " + application.name +"\n\nYour application for "+application.bed_type+" at "+application.hospital+" has been rejected.\n\nReason: "+data["Reason"]
+                self.sendMail(title, message, (application.email,))
+            application.status = 1
+            hospital = Hospitals.objects.get(Hospital_name = application.hospital)
+            if data["bed_type"] == "Covid Bed":
+                hospital.no_applied_covid -= 1
+            elif data["bed_type"] == "Oxygen Bed":
+                hospital.no_applied_oxy -= 1
+            
+            elif data["bed_type"] == "Non oxygen Bed":
+                hospital.no_applied_nonOxy -= 1
+            
+            elif data["bed_type"] == "ICU Bed":
+                hospital.no_applied_icu -= 1
+            
+            else:
+                hospital.no_applied_vent -= 1
+
+            hospital.save()
+            application.save()
             return Response({"message":"Mail sent"})
         except:
+            #traceback.print_exc()
             return Response({"message": "Error sending mail"})
+
+@api_view(['POST'])
+def logOut(request):
+    try: 
+        logout(request)
+        return Response({"message":"Success"})
+    except:
+        traceback.print_exc()
+        return Response({"message":"Try after sometime"})
+
 
 

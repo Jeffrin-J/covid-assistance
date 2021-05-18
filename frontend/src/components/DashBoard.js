@@ -35,6 +35,21 @@ const useStyles = makeStyles((theme) => ({
       fontweight: 'lighter!important', 
       textalign: 'center !important',
     },   
+    text:{
+        position: "absolute",
+        top: "30%",
+        left: "35%",        
+        fontFamily: "Garamond, serif",
+        color: "#1DA1F2",
+    },
+    imag:{
+        position: "absolute",
+        top: "45%",
+        left: "35%",
+        width:"25%",
+        height:"40%",
+        borderRadius:"100%",
+    }
       
 }));
 
@@ -61,25 +76,14 @@ const StyledTableCell = withStyles((theme) => ({
     
 export default function DashBoard(props){
 
-    const [username,setusername]=useState(props.match.params.username);
+    const [username]=useState(props.username);
     const [beddata,SetBedData]=useState(undefined);
     const classes = useStyles();
     const [Reason,SetReason]=useState("");
     const [ReasonBit,SetReasonBit]=useState(0);
-
-    const handlesubmit=(e,status,email,bed_type,hospitalname) => {
-        e.preventDefault();
-        axios
-        .post("http://localhost:8000/api/acceptOrReject",{status:status,Reason:Reason,email:email,bed_type:bed_type,hospital:hospitalname})
-        .then((res) => {
-          if (res.data.message==="Success") {
-            console.log(res.data.message);
-          }
-        });
-    }
+    const [reset, setreset] = useState(0);
 
     useEffect(()=>{
-        console.log(username)
         axios
         .post("http://localhost:8000/api/getrequests",{hospital:username})
         .then((res) => {
@@ -87,14 +91,28 @@ export default function DashBoard(props){
             SetBedData(res.data)
           }
         });
-    },[]);
+        setreset(0);
+    },[reset]);
 
-
-
+    const handlesubmit=(id,status,email,bed_type,hospitalname) => {
+        
+        axios
+        .post("http://localhost:8000/api/acceptOrReject",{id:id,status:status,Reason:Reason,email:email,bed_type:bed_type,hospital:hospitalname})
+        .then((res) => {
+          if (res.data.message==="Mail sent") {
+            console.log(res.data.message);
+            setreset(1);
+          }
+          else{
+            alert(res.data.message);
+          }        
+          
+        });
+    }
 
     return (
         <>
-        <div>{beddata!=undefined && 
+        <div>{(beddata!==undefined) && (beddata.length > 0)?(
             <Paper >
                 <TableContainer  color="secondary">
                     <Table className={classes.table} stickyHeader aria-label="simple table">
@@ -117,12 +135,12 @@ export default function DashBoard(props){
                                     <StyledTableCell align="center">{row.bed_type}</StyledTableCell>
                                     <StyledTableCell align="center">{row.phone_number}</StyledTableCell>
                                     <StyledTableCell align="center">{row.timestamp}</StyledTableCell>
-                                    <StyledTableCell align="center">{<Button variant="contained" color="secondary" onClick = {()=>handlesubmit("accept",row.email,row.bed_type,row.name)}>Accept</Button>}</StyledTableCell>
+                                    <StyledTableCell align="center">{<Button variant="contained" color="secondary" onClick = {()=>handlesubmit(row.id, "accept",row.email,row.bed_type,row.name)}>Accept</Button>}</StyledTableCell>
                                     <StyledTableCell align="center">{<Button variant="contained" color="secondary" onClick = {()=>SetReasonBit(1)}>Reject</Button>}</StyledTableCell>
                                 </StyledTableRow>
                                 
-                                {ReasonBit==1 && <StyledTableRow>
-                                <StyledTableCell colspan={5}>
+                                {ReasonBit===1 && <StyledTableRow>
+                                <StyledTableCell colSpan={5}>
                                         <TextField onChange={(e)=>{SetReason(e.target.value)}}
                                         variant="outlined"
                                         margin="normal"
@@ -133,12 +151,12 @@ export default function DashBoard(props){
                                         name="Reason"
                                         autoComplete="Reason"
                                         value={Reason}
-                                        autofocus
+                                        autoFocus
                                       /> 
                                       </StyledTableCell>
 
-                                      <StyledTableCell align="center" colspan={1}>
-                                      <Button variant='contained' color='secondary' onClick={()=>handlesubmit("reject",row.email,row.bed_type,row.name)}>
+                                      <StyledTableCell align="center" colSpan={1}>
+                                      <Button variant='contained' color='secondary' onClick={()=>handlesubmit(row.id, "reject",row.email,row.bed_type,row.name)}>
                                       SUBMIT
                                       </Button>    
                                       </StyledTableCell>
@@ -153,8 +171,11 @@ export default function DashBoard(props){
                     </Table>
                 </TableContainer>
             </Paper>
-        }</div>
-        </>
+        ):
+        (<><h1 className = {classes.text}>No more Requests !... :)</h1>
+        <img className = {classes.imag} src = "https://www.totaljobs.com/advice/wp-content/uploads/healthcare-assistant-job-description.jpg" alt = ""/>
+        </>)}</div>
+        </> 
     )
 };
 

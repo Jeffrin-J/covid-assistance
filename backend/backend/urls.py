@@ -32,5 +32,6 @@ urlpatterns = [
     path('api/getrequests', GetBedRequests.as_view()),
     path('api/requestbed', BedRequest.as_view()),
     path('api/acceptOrReject', AcceptOrReject.as_view()),
+    path('api/logout',logOut),
 ]
 

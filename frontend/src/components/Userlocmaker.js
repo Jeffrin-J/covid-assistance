@@ -4,7 +4,7 @@ import './marker.css';
 
 
 const UMarker = (props) => {
-    const { color, name, id } = props;
+    const { color, name } = props;
     return (
 <>
  <div

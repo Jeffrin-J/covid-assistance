@@ -43,3 +43,6 @@ class Applied(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=1, choices=((0,"Visible"),(1,"Invisible")), default=0)
 
+    def __str__(self) -> str:
+        return self.name
+

@@ -1,7 +1,6 @@
 import React from "react";
 import { geolocated,geoPropTypes } from "react-geolocated";
-import Maps from './Maps'
-import Tables from './Tables.js'
+import Tables from './Tables.js';
 
 
 

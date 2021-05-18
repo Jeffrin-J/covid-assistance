@@ -15,10 +15,8 @@ import { red } from '@material-ui/core/colors';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
-import {Container,CssBaseline,Avatar,Checkbox} from '@material-ui/core';
+import {Container,CssBaseline,Avatar} from '@material-ui/core';
 import HotelIcon from '@material-ui/icons/Hotel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -124,7 +122,7 @@ export default function Tables(props) {
     const [markerdata,setMarkerData]=useState(undefined);
     const classes = useStyles();
     const{lat,lng}=props;
-    const [center, setCenter] = useState({lat:lat, lng:lng});
+    const [center] = useState({lat:lat, lng:lng});
     const [Phone,SetPhone]=useState();
     const [Email, SetEmail] = useState("");
     const [UserName, SetUserName] = useState("");
@@ -174,7 +172,7 @@ export default function Tables(props) {
     return(
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <div>{markerdata!=undefined && 
+        <div>{markerdata!==undefined && 
             <Paper className={classes.widthing} >
                 <TableContainer  color="secondary">
                     <Table className={classes.table} stickyHeader aria-label="simple table">

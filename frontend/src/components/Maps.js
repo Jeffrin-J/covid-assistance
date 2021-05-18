@@ -1,33 +1,18 @@
 import React, { useState,useEffect} from 'react';
-import GoogleMapReact from 'google-map-react';
-import datas from './samples';
-import UMarker from './Userlocmaker'
 import axios from 'axios';
 import { MapContainer, TileLayer } from "react-leaflet";
 import { useRef } from "react";
 import osm from "./osm-providers";
 import "leaflet/dist/leaflet.css";
-import {Marker, Popup} from "react-leaflet"
-import L from "leaflet"
-import Grid from '@material-ui/core/Grid';
-import {fade, makeStyles } from "@material-ui/core/styles";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import {Marker, Popup} from "react-leaflet";
+import L from "leaflet";
+import { makeStyles } from "@material-ui/core/styles";
 import './marker.css';
 
 const useStyles = makeStyles((theme) => ({
   MapContainer: {
     paddingTop: "2px",
     paddingLeft: "2px",
-
-  table: {
-      minWidth: 650,
-    },
-    
   }}));
 
 
@@ -52,8 +37,8 @@ const markerIcon2 = new L.Icon({
 const Maps = (props) => {
     const{lat,lng}=props;
 
-    const [center, setCenter] = useState({lat:lat, lng:lng});
-    const [zoom, setZoom] = useState(11);
+    const [center] = useState({lat:lat, lng:lng});
+    //const [zoom, setZoom] = useState(11);
     const mapRef = useRef();
     const [markerdata,setMarkerData]=useState(undefined);
     const ZOOM_LEVEL=11;
@@ -98,12 +83,12 @@ const Maps = (props) => {
   return (
     <>
 
-       <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef}>
+       <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef} className = {classes.MapContainer}>
             <TileLayer
               url={osm.maptiler.url}
               attribution={osm.maptiler.attribution}
             />
-        {markerdata!=undefined && getmarkers() }      
+        {markerdata!==undefined && getmarkers() }      
         <Marker
                   position={[center.lat, center.lng]}
                   icon={markerIcon2}
