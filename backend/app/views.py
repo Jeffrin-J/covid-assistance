@@ -15,7 +15,11 @@ from django.contrib.auth import authenticate, login, logout
 import tweepy
 import traceback
 from django.core.mail import send_mail
-
+from django.conf import settings
+from selenium.webdriver.common.keys import Keys
+from datetime import datetime as dt
+from datetime import timezone
+import pytz
 class getdata(APIView):
     def post(self, request):
         url="https://stopcorona.tn.gov.in/beds.php"
@@ -118,18 +122,36 @@ class VerifyLogin(ListCreateAPIView):
 
 
 class Tweet(APIView):
-    consumer_key ="xxxxxxxxxxxxxxxx"
-    consumer_secret ="xxxxxxxxxxxxxxxx"
-    access_token ="xxxxxxxxxxxxxxxx"
-    access_token_secret ="xxxxxxxxxxxxxxxx"
-
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-
-    api = tweepy.API(auth)
     def post(self, request):
-        data = request.data
-        self.api.update_status(status = data.message)
+        url="https://twitter.com/login"
+        driver1 = ChromeDriverManager().install()
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        driver = webdriver.Chrome(driver1)
+        driver.get(url)
+        sleep(5)
+        usernameInput=driver.find_element_by_name("session[username_or_email]")
+        passwordInput=driver.find_element_by_name("session[password]")
+        usernameInput.send_keys(getattr(settings, "TWITTER_USERNAME", None))
+        passwordInput.send_keys(getattr(settings, "TWITTER_PASSWORD", None))
+        passwordInput.send_keys(Keys.ENTER)
+        sleep(5)
+        l = Applied.objects.filter(status = 0)
+        IST = pytz.timezone('Asia/Kolkata')
+        for i in l:
+            print((dt.now(IST) - i.timestamp).seconds/60)
+            if ((dt.now(IST) - i.timestamp).seconds/60) > 3600:
+
+
+                tweet = driver.find_element_by_xpath('''//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div
+                                                        /div[2]/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div
+                                                        /div/div/div/div/div/div/div/div[1]/div/div/div/div[2]/div
+                                                        /div/div/div''')
+                tweet.send_keys("""Hello World!""")
+                tweet.send_keys(Keys.COMMAND, Keys.ENTER)
+
+                submit = driver.find_element_by_xpath("//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div[2]/div[1]/div/div/div/div[2]/div[3]/div/div/div[2]/div/div/span/span")
+                submit.click()
 
 
 class BedRequest(ListCreateAPIView):
@@ -232,4 +254,9 @@ def logOut(request):
         return Response({"message":"Try after sometime"})
 
 
+#class="css-1dbjc4n r-urgr8i r-42olwf r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-1fz3rvf r-usiww2 r-1pl7oy7 r-snto4y r-icoktb r-1ny4l3l r-1dye5f7 r-o7ynqc r-6416eg r-lrvibr"
+#class="r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu"
+#"css-901oao css-16my406 r-poiln3 r-bcqeeo r-qvutc0"
+# r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu
 
+#css-1dbjc4n r-urgr8i r-42olwf r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-19u6a5r r-ero68b r-1gg2371 r-icoktb r-1ny4l3l r-1fneopy r-o7ynqc r-6416eg r-lrvibr"

@@ -4,6 +4,8 @@ from celery import Celery
 from django.conf import settings
 import pandas as pd
 from django.apps import apps
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
 
 # # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
@@ -57,3 +59,27 @@ def update_data(self):
         except:
             pass
  
+
+""" @app.task(bind=True) 
+def tweet(self):
+    url="https://twitter.com/login"
+    driver1 = ChromeDriverManager().install()
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    driver = webdriver.Chrome(driver1)
+    driver.get(url)
+    username = driver.find_element_by_name("r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu")
+    username.click()
+    username.send_keys(getattr(settings, "TWITTER_USERNAME", None))
+    passsword = driver.find_element_by_name("session[password]")
+    passsword.click()
+    username.send_keys(getattr(settings, "TWITTER_PASSWORD", None))
+    login = driver.find_element_by_class_name("css-18t94o4")
+    login.click()
+
+    inp = driver.find_element_by_name("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")
+    inp.click()
+    inp.send_keys("Need help")
+
+    submit = driver.find_element_by_class_name("css-901oao r-1awozwy r-jwli3a r-6koalj r-18u37iz r-16y2uox r-1qd0xha r-a023e6 r-b88u0q r-1777fci r-rjixqe r-dnmrzs r-bcqeeo r-q4m81j r-qvutc0")
+    submit.click() """
