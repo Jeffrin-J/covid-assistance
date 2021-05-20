@@ -134,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-
+let rad = 20;
 export default function PrimaryAppBar() {
   
   const classes = useStyles();
@@ -225,23 +225,15 @@ export default function PrimaryAppBar() {
   };
   
   function valuetext(value){
-
-    let rad=value
-    
-
+    rad=value;
     return `${value}km`;
-
   }
-
-
-
-
+  
   useEffect(()=>{
-
-    valuetext();
     console.log("hi");
     setreset(0);
   },[reset]);
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
