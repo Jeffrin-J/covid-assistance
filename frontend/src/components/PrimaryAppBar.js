@@ -26,7 +26,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import {Container,CssBaseline,Avatar,Checkbox} from '@material-ui/core';
 import axios from 'axios';
-import { red } from '@material-ui/core/colors';
+import { red} from '@material-ui/core/colors';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
@@ -37,6 +37,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import clsx from 'clsx';
 import CloseIcon from '@material-ui/icons/Close';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -123,6 +124,11 @@ const useStyles = makeStyles((theme) => ({
   space:{
     marginBottom: "10px",
   },
+
+  appbarbackground:
+  {
+    background:'black',
+  }
   
 }));
 
@@ -150,6 +156,8 @@ export default function PrimaryAppBar() {
   const [values, setValues] = React.useState({
     showPassword: false,
   });
+
+  const [message,setmessage]=React.useState("");
   
   // console.log(logged);
   // console.log(sessionStorage);
@@ -355,7 +363,7 @@ export default function PrimaryAppBar() {
       .post("http://localhost:8000/api/get",{username: RegisterUserName,password: RegisterPassword, hospital_name: hospital_name})
       .then((res) => {
         if (res.data.message==="user created successfully") {
-
+          setmessage("user created successfully");
         }
         else
         {
@@ -368,7 +376,7 @@ export default function PrimaryAppBar() {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.appbarbackground}>
         <Toolbar>
           <IconButton
             edge="start"
@@ -624,6 +632,7 @@ export default function PrimaryAppBar() {
           </FormControl>
 
 {PasswordError!=="" &&(<p className={classes.error}> <ErrorOutlineIcon color='error'/> {"  "+PasswordError}</p>)}
+{message!=="" && (<p className={classes.error}> <CheckCircleIcon color='inherit'/> {" "+message}</p>)}
 
 
           <FormControlLabel

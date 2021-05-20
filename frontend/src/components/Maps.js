@@ -56,7 +56,8 @@ const Maps = (props) => {
       <Popup>
       <b>
       {/* {console.log(data)} */}
-      {data.place}
+      {data.place} <br/>
+      Total vacancy:{data.covid_bed_vacant+data.oxy_bed_vacant+data.non_oxy_bed_vacant+data.icu_bed_vacant+data.vent_bed_vacant}
         </b>
       </Popup>
       </Marker>

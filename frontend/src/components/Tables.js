@@ -180,11 +180,11 @@ export default function Tables(props) {
                         <TableHead>
                         <TableRow>
                             <StyledTableCell rowSpan={2}>HospitalName</StyledTableCell>
-                            <StyledTableCell colSpan={3} align="center">Covid Beds</StyledTableCell>
-                            <StyledTableCell colSpan={3} align="center">Oxygen Beds</StyledTableCell>
-                            <StyledTableCell colSpan={3} align="center">Non Oxygen Beds</StyledTableCell>
-                            <StyledTableCell colSpan={3} align="center">ICU Beds</StyledTableCell>
-                            <StyledTableCell colSpan={3} align="center">Ventilator Beds</StyledTableCell>
+                            <StyledTableCell colSpan={2} align="center">Covid Beds</StyledTableCell>
+                            <StyledTableCell colSpan={2} align="center">Oxygen Beds</StyledTableCell>
+                            <StyledTableCell colSpan={2} align="center">Non Oxygen Beds</StyledTableCell>
+                            <StyledTableCell colSpan={2} align="center">ICU Beds</StyledTableCell>
+                            <StyledTableCell colSpan={2} align="center">Ventilator Beds</StyledTableCell>
                             <StyledTableCell rowSpan={2} align="center">Action</StyledTableCell> 
                             <StyledTableCell rowSpan={2} align="center">Last Updated</StyledTableCell>
                             <StyledTableCell rowSpan={2} align="center">Contact Number</StyledTableCell>
@@ -192,19 +192,19 @@ export default function Tables(props) {
                         </TableRow>
                         <TableRow> 
                             <StyledTableCell align="center">Covid Beds Total</StyledTableCell>
-                            <StyledTableCell align="center">Covid Beds Occupied</StyledTableCell>
+                            
                             <StyledTableCell align="center">Covid Beds Vacant</StyledTableCell>
                             <StyledTableCell align="center">Oxygen Beds Total</StyledTableCell>
-                            <StyledTableCell align="center">Oxygen Beds Occupied</StyledTableCell>
+                            
                             <StyledTableCell align="center">Oxygen Beds Vacant</StyledTableCell>
                             <StyledTableCell align="center">Non Oxygen Beds Total</StyledTableCell>
-                            <StyledTableCell align="center">Non Oxygen Beds Occupied</StyledTableCell>
+                            
                             <StyledTableCell align="center">Non Oxygen Beds Vacant</StyledTableCell>
                             <StyledTableCell align="center">ICU Beds Total</StyledTableCell>
-                            <StyledTableCell align="center">ICU Beds Occupied</StyledTableCell>
+                            
                             <StyledTableCell align="center">ICU Beds Vacant</StyledTableCell>
                             <StyledTableCell align="center">Ventilator Total</StyledTableCell>
-                            <StyledTableCell align="center">Ventilator Occupied</StyledTableCell>
+                            
                             <StyledTableCell align="center">Ventilator Vacant</StyledTableCell>
                         </TableRow>
                         </TableHead>
@@ -215,19 +215,19 @@ export default function Tables(props) {
                                 {row.place}
                             </StyledTableCell>
                             <StyledTableCell align="center">{row.covid_bed_total}</StyledTableCell>
-                            <StyledTableCell align="center">{row.covid_bed_occupied}</StyledTableCell>
+                            
                             <StyledTableCell align="center">{row.covid_bed_vacant}</StyledTableCell>
                             <StyledTableCell align="center">{row.oxy_bed_total}</StyledTableCell>
-                            <StyledTableCell align="center">{row.oxy_bed_occupied}</StyledTableCell>
+                            
                             <StyledTableCell align="center">{row.oxy_bed_vacant}</StyledTableCell>
                             <StyledTableCell align="center">{row.non_oxy_bed_total}</StyledTableCell>
-                            <StyledTableCell align="center">{row.non_oxy_bed_occupied}</StyledTableCell>
+                            
                             <StyledTableCell align="center">{row.non_oxy_bed_vacant}</StyledTableCell>
                             <StyledTableCell align="center">{row.icu_bed_total}</StyledTableCell>
-                            <StyledTableCell align="center">{row.icu_bed_occupied}</StyledTableCell>
+                            
                             <StyledTableCell align="center">{row.icu_bed_vacant}</StyledTableCell>
                             <StyledTableCell align="center">{row.vent_bed_total}</StyledTableCell>
-                            <StyledTableCell align="center">{row.vent_bed_occupied}</StyledTableCell>
+                            
                             <StyledTableCell align="center">{row.vent_bed_vacant}</StyledTableCell>
                             <StyledTableCell align="center">{row.covid_bed_vacant===0 && row.oxy_bed_vacant===0 && row.non_oxy_bed_vacant===0 && row.icu_bed_vacant===0 && row.vent_bed_vacant===0 ?       
                             (<Button variant="contained" color="secondary" disabled>Request</Button>) : (<Button variant="contained" color="secondary" value={row.place} onClick={()=>handleClickOpens(row.place,[row.covid_bed_vacant,row.oxy_bed_vacant,row.non_oxy_bed_vacant,row.icu_bed_vacant,row.vent_bed_vacant])} >Request</Button>) }</StyledTableCell>
