@@ -121,8 +121,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Tables(props) {
     const [markerdata,setMarkerData]=useState(undefined);
     const classes = useStyles();
-    const{lat,lng}=props;
-    const [center] = useState({lat:lat, lng:lng});
+    const{lat,lng,rad}=props;
+    const [center] = useState({lat:lat, lng:lng ,rad:rad});
     const [Phone,SetPhone]=useState();
     const [Email, SetEmail] = useState("");
     const [UserName, SetUserName] = useState("");
@@ -169,6 +169,8 @@ export default function Tables(props) {
         });
         
     },[]);
+
+
 
     return(
       <ThemeProvider theme={theme}>

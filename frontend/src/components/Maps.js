@@ -8,6 +8,8 @@ import {Marker, Popup} from "react-leaflet";
 import L from "leaflet";
 import { makeStyles } from "@material-ui/core/styles";
 import './marker.css';
+import Slider from '@material-ui/core/Slider';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
   MapContainer: {
@@ -35,13 +37,15 @@ const markerIcon2 = new L.Icon({
 
 
 const Maps = (props) => {
-    const{lat,lng}=props;
-
-    const [center] = useState({lat:lat, lng:lng});
+  const{lat,lng,rad}=props;
+  const [center] = useState({lat:lat, lng:lng ,rad:rad});
+ 
     //const [zoom, setZoom] = useState(11);
     const mapRef = useRef();
     const [markerdata,setMarkerData]=useState(undefined);
     const ZOOM_LEVEL=11;
+    const [reset,setreset]=useState(0);
+    
 
     const classes = useStyles();
 
@@ -66,8 +70,12 @@ const Maps = (props) => {
       );
       }
 
+   
+
     useEffect(()=>{
       console.log("hi");
+      
+      // firsttime=0
       axios
       .post("http://localhost:8000/api/postcurrentloc",center)
       .then((res) => {
@@ -77,13 +85,14 @@ const Maps = (props) => {
           setMarkerData(data);
         }
       });
-      
-    },[]);
+    
+      setreset(0);
+    },[reset]);
 
-  
+
   return (
     <>
-
+       
        <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef} className = {classes.MapContainer}>
             <TileLayer
               url={osm.maptiler.url}

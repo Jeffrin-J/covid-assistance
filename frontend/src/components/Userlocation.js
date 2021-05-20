@@ -12,7 +12,7 @@ class MapContainer extends React.Component {
         ) : !this.props.isGeolocationEnabled ? (
             <div>Geolocation is not enabled</div>
         ) : this.props.coords ? (
-            <Maps lat={this.props.coords.latitude} lng={this.props.coords.longitude}/>
+            <Maps lat={this.props.coords.latitude} lng={this.props.coords.longitude} rad={this.props.rad}/>
         ) : (
             <div>Getting the location data&hellip; </div>
         );

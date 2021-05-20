@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -38,6 +38,7 @@ import FormControl from '@material-ui/core/FormControl';
 import clsx from 'clsx';
 import CloseIcon from '@material-ui/icons/Close';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Slider from '@material-ui/core/Slider';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -159,9 +160,7 @@ export default function PrimaryAppBar() {
 
   const [message,setmessage]=React.useState("");
   
-  // console.log(logged);
-  // console.log(sessionStorage);
-  // console.log("logged");
+  const [reset,setreset]=React.useState(0);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -225,6 +224,24 @@ export default function PrimaryAppBar() {
     });
   };
   
+  function valuetext(value){
+
+    let rad=value
+    
+
+    return `${value}km`;
+
+  }
+
+
+
+
+  useEffect(()=>{
+
+    valuetext();
+    console.log("hi");
+    setreset(0);
+  },[reset]);
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -671,14 +688,29 @@ export default function PrimaryAppBar() {
           </div>
         </Toolbar>
       </AppBar>
+      {logged===0 && <>
+        <Typography id="discrete-slider" gutterBottom>
+        Radius in kilometers
+        </Typography>
+      <Slider
+        defaultValue={20}
+        onChange={()=>setreset(1)}
+        getAriaValueText={valuetext}
+        aria-labelledby="discrete-slider"
+        valueLabelDisplay="auto"
+        step={10}
+        marks
+        min={10}
+        max={500}
+      /></>}
       {logged === 0 ?
         <>
           <div>
             <TabPanel value={value} index={0}>
-              <MapContainer/>
+              <MapContainer rad={rad} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <TableContainer/>
+              <TableContainer rad={rad}/>
             </TabPanel>
           </div>
         </>

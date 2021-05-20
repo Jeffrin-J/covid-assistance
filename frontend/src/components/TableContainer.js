@@ -11,7 +11,7 @@ class TableContainer extends React.Component {
         ) : !this.props.isGeolocationEnabled ? (
             <div>Geolocation is not enabled</div>
         ) : this.props.coords ? (
-            <Tables lat={this.props.coords.latitude} lng={this.props.coords.longitude}/>
+            <Tables lat={this.props.coords.latitude} lng={this.props.coords.longitude} rad={this.props.rad}/>
         ) : (
             <div>Getting the location data&hellip; </div>
         );

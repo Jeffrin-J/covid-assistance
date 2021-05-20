@@ -83,8 +83,9 @@ class Postcurrentloc(ListCreateAPIView):
         
         h_lat = float(request.data.get('lat'))
         h_lon = float(request.data.get('lng'))
-        
-        rad = 500
+        rad = float(request.data.get('rad'))
+        print(rad)
+        print("")
         result = []
         c=0
         for i in self.get_queryset():
@@ -120,38 +121,6 @@ class VerifyLogin(ListCreateAPIView):
             else:
                 return Response({"message":"Invalid password"})
 
-
-class Tweet(APIView):
-    def post(self, request):
-        url="https://twitter.com/login"
-        driver1 = ChromeDriverManager().install()
-        options = webdriver.ChromeOptions()
-        options.add_argument('headless')
-        driver = webdriver.Chrome(driver1)
-        driver.get(url)
-        sleep(5)
-        usernameInput=driver.find_element_by_name("session[username_or_email]")
-        passwordInput=driver.find_element_by_name("session[password]")
-        usernameInput.send_keys(getattr(settings, "TWITTER_USERNAME", None))
-        passwordInput.send_keys(getattr(settings, "TWITTER_PASSWORD", None))
-        passwordInput.send_keys(Keys.ENTER)
-        sleep(5)
-        l = Applied.objects.filter(status = 0)
-        IST = pytz.timezone('Asia/Kolkata')
-        for i in l:
-            print((dt.now(IST) - i.timestamp).seconds/60)
-            if ((dt.now(IST) - i.timestamp).seconds/60) > 3600:
-
-
-                tweet = driver.find_element_by_xpath('''//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div
-                                                        /div[2]/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div
-                                                        /div/div/div/div/div/div/div/div[1]/div/div/div/div[2]/div
-                                                        /div/div/div''')
-                tweet.send_keys("""Hello World!""")
-                tweet.send_keys(Keys.COMMAND, Keys.ENTER)
-
-                submit = driver.find_element_by_xpath("//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div[2]/div[1]/div/div/div/div[2]/div[3]/div/div/div[2]/div/div/span/span")
-                submit.click()
 
 
 class BedRequest(ListCreateAPIView):
@@ -195,7 +164,7 @@ class GetBedRequests(ListCreateAPIView):
     serializer_class = ShowRequestSErializer
 
     def post(self, request):
-        query_set = Applied.objects.filter(hospital=self.request.data["hospital"], status = 0)
+        query_set = Applied.objects.filter(hospital=self.request.data["hospital"], status = "0")
         return Response(query_set.values())
 
     def get_queryset(self):
@@ -221,7 +190,7 @@ class AcceptOrReject(APIView):
                 title = "Application for bed rejected"
                 message = "\nDear " + application.name +"\n\nYour application for "+application.bed_type+" at "+application.hospital+" has been rejected.\n\nReason: "+data["Reason"]
                 self.sendMail(title, message, (application.email,))
-            application.status = 1
+            application.status = "1"
             hospital = Hospitals.objects.get(Hospital_name = application.hospital)
             if application.bed_type == "Covid Bed":
                 hospital.no_applied_covid -= 1

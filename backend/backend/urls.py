@@ -33,6 +33,5 @@ urlpatterns = [
     path('api/requestbed', BedRequest.as_view()),
     path('api/acceptOrReject', AcceptOrReject.as_view()),
     path('api/logout',logOut),
-    path('api/tweet', Tweet.as_view()),
 ]
 

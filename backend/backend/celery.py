@@ -60,26 +60,36 @@ def update_data(self):
             pass
  
 
-""" @app.task(bind=True) 
+@app.task(bind=True) 
 def tweet(self):
     url="https://twitter.com/login"
     driver1 = ChromeDriverManager().install()
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
-    driver = webdriver.Chrome(driver1)
+    driver = webdriver.Chrome(driver1,options=options)
     driver.get(url)
-    username = driver.find_element_by_name("r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu")
-    username.click()
-    username.send_keys(getattr(settings, "TWITTER_USERNAME", None))
-    passsword = driver.find_element_by_name("session[password]")
-    passsword.click()
-    username.send_keys(getattr(settings, "TWITTER_PASSWORD", None))
-    login = driver.find_element_by_class_name("css-18t94o4")
-    login.click()
+    sleep(2)
+    usernameInput=driver.find_element_by_name("session[username_or_email]")
+    passwordInput=driver.find_element_by_name("session[password]")
+    usernameInput.send_keys(getattr(settings, "TWITTER_USERNAME", None))
+    passwordInput.send_keys(getattr(settings, "TWITTER_PASSWORD", None))
+    passwordInput.send_keys(Keys.ENTER)
+    sleep(2)
+    l = Applied.objects.filter(status = "0",twitted="1")
+    IST = pytz.timezone('Asia/Kolkata')
+    for i in l:
+        print((dt.now(IST) - i.timestamp).seconds/60)
+        if ((dt.now(IST) - i.timestamp).seconds/60) > 3600:
 
-    inp = driver.find_element_by_name("public-DraftStyleDefault-block public-DraftStyleDefault-ltr")
-    inp.click()
-    inp.send_keys("Need help")
 
-    submit = driver.find_element_by_class_name("css-901oao r-1awozwy r-jwli3a r-6koalj r-18u37iz r-16y2uox r-1qd0xha r-a023e6 r-b88u0q r-1777fci r-rjixqe r-dnmrzs r-bcqeeo r-q4m81j r-qvutc0")
-    submit.click() """
+            tweet = driver.find_element_by_xpath('''//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div
+                                                    /div[2]/div/div[2]/div[1]/div/div/div/div[2]/div[1]/div/div
+                                                    /div/div/div/div/div/div/div/div[1]/div/div/div/div[2]/div
+                                                    /div/div/div''')
+            tweet.send_keys("person named, ",i.name," requires some essentials for overcoming covid please kindly help \ncontact:",i.phone_number)
+            tweet.send_keys(("\nemailid :"+i.email) if(len(i.email)>0) else "")
+            tweet.send_keys(Keys.COMMAND, Keys.ENTER)
+
+            submit = driver.find_element_by_xpath("//*[@id='react-root']/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div[2]/div[1]/div/div/div/div[2]/div[3]/div/div/div[2]/div/div/span/span")
+            submit.click()
+            i.tweeted="0"
