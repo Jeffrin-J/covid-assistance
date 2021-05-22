@@ -15,7 +15,11 @@ from django.contrib.auth import authenticate, login, logout
 import tweepy
 import traceback
 from django.core.mail import send_mail
-
+from django.conf import settings
+from selenium.webdriver.common.keys import Keys
+from datetime import datetime as dt
+from datetime import timezone
+import pytz
 class getdata(APIView):
     def post(self, request):
         url="https://stopcorona.tn.gov.in/beds.php"
@@ -79,8 +83,9 @@ class Postcurrentloc(ListCreateAPIView):
         
         h_lat = float(request.data.get('lat'))
         h_lon = float(request.data.get('lng'))
-        
-        rad = 500
+        rad = float(request.data.get('rad'))
+        print(rad)
+        print("")
         result = []
         c=0
         for i in self.get_queryset():
@@ -116,20 +121,6 @@ class VerifyLogin(ListCreateAPIView):
             else:
                 return Response({"message":"Invalid password"})
 
-
-class Tweet(APIView):
-    consumer_key ="xxxxxxxxxxxxxxxx"
-    consumer_secret ="xxxxxxxxxxxxxxxx"
-    access_token ="xxxxxxxxxxxxxxxx"
-    access_token_secret ="xxxxxxxxxxxxxxxx"
-
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-
-    api = tweepy.API(auth)
-    def post(self, request):
-        data = request.data
-        self.api.update_status(status = data.message)
 
 
 class BedRequest(ListCreateAPIView):
@@ -173,7 +164,7 @@ class GetBedRequests(ListCreateAPIView):
     serializer_class = ShowRequestSErializer
 
     def post(self, request):
-        query_set = Applied.objects.filter(hospital=self.request.data["hospital"], status = 0)
+        query_set = Applied.objects.filter(hospital=self.request.data["hospital"], status = "0")
         return Response(query_set.values())
 
     def get_queryset(self):
@@ -199,7 +190,7 @@ class AcceptOrReject(APIView):
                 title = "Application for bed rejected"
                 message = "\nDear " + application.name +"\n\nYour application for "+application.bed_type+" at "+application.hospital+" has been rejected.\n\nReason: "+data["Reason"]
                 self.sendMail(title, message, (application.email,))
-            application.status = 1
+            application.status = "1"
             hospital = Hospitals.objects.get(Hospital_name = application.hospital)
             if application.bed_type == "Covid Bed":
                 hospital.no_applied_covid -= 1
@@ -232,4 +223,9 @@ def logOut(request):
         return Response({"message":"Try after sometime"})
 
 
+#class="css-1dbjc4n r-urgr8i r-42olwf r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-1fz3rvf r-usiww2 r-1pl7oy7 r-snto4y r-icoktb r-1ny4l3l r-1dye5f7 r-o7ynqc r-6416eg r-lrvibr"
+#class="r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu"
+#"css-901oao css-16my406 r-poiln3 r-bcqeeo r-qvutc0"
+# r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu
 
+#css-1dbjc4n r-urgr8i r-42olwf r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-19u6a5r r-ero68b r-1gg2371 r-icoktb r-1ny4l3l r-1fneopy r-o7ynqc r-6416eg r-lrvibr"

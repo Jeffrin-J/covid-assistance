@@ -35,13 +35,13 @@ const markerIcon2 = new L.Icon({
 
 
 const Maps = (props) => {
-    const{lat,lng}=props;
-
-    const [center] = useState({lat:lat, lng:lng});
-    //const [zoom, setZoom] = useState(11);
+  const{lat,lng,rad}=props;
+  const [center] = useState({lat:lat, lng:lng ,rad:rad});
     const mapRef = useRef();
     const [markerdata,setMarkerData]=useState(undefined);
-    const ZOOM_LEVEL=11;
+    const ZOOM_LEVEL=8;
+    const [reset,setreset]=useState(0);
+    
 
     const classes = useStyles();
 
@@ -56,7 +56,8 @@ const Maps = (props) => {
       <Popup>
       <b>
       {/* {console.log(data)} */}
-      {data.place}
+      {data.place} <br/>
+      Total vacancy:{data.covid_bed_vacant+data.oxy_bed_vacant+data.non_oxy_bed_vacant+data.icu_bed_vacant+data.vent_bed_vacant}
         </b>
       </Popup>
       </Marker>
@@ -65,8 +66,12 @@ const Maps = (props) => {
       );
       }
 
+   
+
     useEffect(()=>{
       console.log("hi");
+      
+      // firsttime=0
       axios
       .post("http://localhost:8000/api/postcurrentloc",center)
       .then((res) => {
@@ -76,13 +81,14 @@ const Maps = (props) => {
           setMarkerData(data);
         }
       });
-      
-    },[]);
+    
+      setreset(0);
+    },[reset]);
 
-  
+
   return (
     <>
-
+       
        <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef} className = {classes.MapContainer}>
             <TileLayer
               url={osm.maptiler.url}

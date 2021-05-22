@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -26,7 +26,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import {Container,CssBaseline,Avatar,Checkbox} from '@material-ui/core';
 import axios from 'axios';
-import { red } from '@material-ui/core/colors';
+import { red} from '@material-ui/core/colors';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
@@ -37,6 +37,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import clsx from 'clsx';
 import CloseIcon from '@material-ui/icons/Close';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Slider from '@material-ui/core/Slider';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -123,11 +125,16 @@ const useStyles = makeStyles((theme) => ({
   space:{
     marginBottom: "10px",
   },
+
+  appbarbackground:
+  {
+    background:'black',
+  }
   
 }));
 
 
-
+let rad = 20;
 export default function PrimaryAppBar() {
   
   const classes = useStyles();
@@ -150,10 +157,10 @@ export default function PrimaryAppBar() {
   const [values, setValues] = React.useState({
     showPassword: false,
   });
+
+  const [message,setmessage]=React.useState("");
   
-  // console.log(logged);
-  // console.log(sessionStorage);
-  // console.log("logged");
+  const [reset,setreset]=React.useState(0);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -217,6 +224,16 @@ export default function PrimaryAppBar() {
     });
   };
   
+  function valuetext(value){
+    rad=value;
+    return `${value}km`;
+  }
+  
+  useEffect(()=>{
+    console.log("hi");
+    setreset(0);
+  },[reset]);
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -355,7 +372,7 @@ export default function PrimaryAppBar() {
       .post("http://localhost:8000/api/get",{username: RegisterUserName,password: RegisterPassword, hospital_name: hospital_name})
       .then((res) => {
         if (res.data.message==="user created successfully") {
-
+          setmessage("user created successfully");
         }
         else
         {
@@ -368,7 +385,7 @@ export default function PrimaryAppBar() {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.appbarbackground}>
         <Toolbar>
           <IconButton
             edge="start"
@@ -624,6 +641,7 @@ export default function PrimaryAppBar() {
           </FormControl>
 
 {PasswordError!=="" &&(<p className={classes.error}> <ErrorOutlineIcon color='error'/> {"  "+PasswordError}</p>)}
+{message!=="" && (<p className={classes.error}> <CheckCircleIcon color='inherit'/> {" "+message}</p>)}
 
 
           <FormControlLabel
@@ -662,14 +680,29 @@ export default function PrimaryAppBar() {
           </div>
         </Toolbar>
       </AppBar>
+      {logged===0 && <>
+        <Typography id="discrete-slider" gutterBottom>
+        Radius in kilometers
+        </Typography>
+      <Slider
+        defaultValue={20}
+        onChange={()=>setreset(1)}
+        getAriaValueText={valuetext}
+        aria-labelledby="discrete-slider"
+        valueLabelDisplay="auto"
+        step={10}
+        marks
+        min={10}
+        max={500}
+      /></>}
       {logged === 0 ?
         <>
           <div>
             <TabPanel value={value} index={0}>
-              <MapContainer/>
+              <MapContainer rad={rad} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <TableContainer/>
+              <TableContainer rad={rad}/>
             </TabPanel>
           </div>
         </>
