@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from time import sleep
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import pandas as pd
@@ -12,14 +11,8 @@ from selenium import webdriver
 from time import sleep
 from webdriver_manager.chrome import ChromeDriverManager
 from django.contrib.auth import authenticate, login, logout
-import tweepy
 import traceback
 from django.core.mail import send_mail
-from django.conf import settings
-from selenium.webdriver.common.keys import Keys
-from datetime import datetime as dt
-from datetime import timezone
-import pytz
 class getdata(APIView):
     def post(self, request):
         url="https://stopcorona.tn.gov.in/beds.php"
@@ -154,7 +147,10 @@ class BedRequest(ListCreateAPIView):
             hospital.save()
             data = request.data
             subject = "Dear " + data["name"]+"\n   You have applied for a "+data["bed_type"]+" in "+data["hospital"]
-            send_mail("Application for bed sent", subject, "pythonformail@gmail.com", (data["email"], ), fail_silently=True)
+
+            # enter your email below
+
+            send_mail("Application for bed sent", subject, "enter your email", (data["email"], ), fail_silently=True)
             return Response({"message":"Success"})
         except:
             #traceback.print_exc()
@@ -173,8 +169,9 @@ class GetBedRequests(ListCreateAPIView):
 
 class AcceptOrReject(APIView):
 
+    # enter your email here
     def sendMail(self, title, message, to_mail):
-        send_mail(title, message, "pythonformail@gmail.com", to_mail, fail_silently=True)
+        send_mail(title, message, "XXXXXX", to_mail, fail_silently=True)
 
     def post(self, request):
         try:
