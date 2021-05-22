@@ -163,7 +163,7 @@ export default function Tables(props) {
         .then((res) => {
           if (res.data) {
             const data=res.data;
-            console.log(data)
+            //console.log(data)
             setMarkerData(data);
           }
         });
