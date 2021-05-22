@@ -6,6 +6,12 @@ import pandas as pd
 from django.apps import apps
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
+from time import sleep
+
+from django.conf import settings
+from selenium.webdriver.common.keys import Keys
+from datetime import datetime as dt
+import pytz
 
 # # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
@@ -75,6 +81,7 @@ def tweet(self):
     passwordInput.send_keys(getattr(settings, "TWITTER_PASSWORD", None))
     passwordInput.send_keys(Keys.ENTER)
     sleep(2)
+    Applied = apps.get_model(app_label='app', model_name='Applied')
     l = Applied.objects.filter(status = "0",twitted="1")
     IST = pytz.timezone('Asia/Kolkata')
     for i in l:
