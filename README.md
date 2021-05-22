@@ -13,8 +13,8 @@ to seek for help by posting the details of the patient.
 
 ### Requirements
 
-* Backend  - covid-assistance/backend/requirements.txt
-* Frontend - covid-assistance/frontend/package.json
+* Backend  - [click to view requirements for backend](https://github.com/Jeffrin-J/covid-assistance/blob/master/backend/requirements.txt)
+* Frontend - [click to view requirements for frontend](https://github.com/Jeffrin-J/covid-assistance/blob/master/frontend/package.json)
 
 ### Process Flow Diagram
 
