@@ -19,3 +19,7 @@ to seek for help by posting the details of the patient.
 ### Process Flow Diagram
 
 ![process flow](https://github.com/Jeffrin-J/covid-assistance/blob/master/flow_diagrams/flowchart.png?raw=true)
+
+### Data flow Diagram
+
+![data flow diagram](https://github.com/Jeffrin-J/covid-assistance/blob/master/flow_diagrams/image.png?raw=true)
