@@ -64,3 +64,5 @@ webencodings==0.5.1
 wrapt==1.12.1
 whitenoise==5.2.0
 django-environ==0.4.5
+psycopg2==2.8.6
+pycparser==2.20
