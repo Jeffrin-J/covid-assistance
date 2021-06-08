@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/covid-assistance/static/css/main.af535c12.chunk.css",
-    "main.js": "/covid-assistance/static/js/main.27573426.chunk.js",
+    "main.js": "/covid-assistance/static/js/main.bbe186fc.chunk.js",
     "runtime-main.js": "/covid-assistance/static/js/runtime-main.4d73e1a0.js",
     "static/css/2.5abdb074.chunk.css": "/covid-assistance/static/css/2.5abdb074.chunk.css",
     "static/js/2.a101d4db.chunk.js": "/covid-assistance/static/js/2.a101d4db.chunk.js",
@@ -14,6 +14,6 @@
     "static/css/2.5abdb074.chunk.css",
     "static/js/2.a101d4db.chunk.js",
     "static/css/main.af535c12.chunk.css",
-    "static/js/main.27573426.chunk.js"
+    "static/js/main.bbe186fc.chunk.js"
   ]
 }
