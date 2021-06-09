@@ -1,12 +1,10 @@
 /Lib
 /pyvenv.cfg
 /Scripts
-/frontend/node_modules
-/frontend/build
 /.vscode
-/backend/backend/__pycache__
-/backend/app/__pycache__
-/backend/app/migrations/__pycache__
-/backend/db.sqlite3
-/backend/venv
+backend/__pycache__
+app/__pycache__
+app/migrations/__pycache__
+db.sqlite3
+venv
 node_modules

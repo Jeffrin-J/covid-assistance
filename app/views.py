@@ -16,10 +16,13 @@ from django.contrib.auth import authenticate, login, logout
 import traceback
 from django.core.mail import send_mail
 import os
+
+def index(request):
+    return render(request, "index.html")
 class Assets(View):
 
     def get(self, _request, filename):
-        path = os.path.join(os.path.dirname(__file__), 'static', filename)
+        path = os.path.join(os.path.dirname(__file__).parent, 'static', filename)
 
         if os.path.isfile(path):
             with open(path, 'rb') as file:
